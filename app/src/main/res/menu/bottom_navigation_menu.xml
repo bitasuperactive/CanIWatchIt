@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- TODO - Menu items: Vincular fragmentos. -->
+    <!-- TODO - Menu items: Dar iconos. -->
+    <item
+        android:id="@+id/searchFragment"
+        android:title="Search"/>
+    <item
+        android:id="@+id/trackingFragment"
+        android:title="Tracking"/>
+    <item
+        android:id="@+id/servicesFragment"
+        android:title="Services"/>
+</menu>
