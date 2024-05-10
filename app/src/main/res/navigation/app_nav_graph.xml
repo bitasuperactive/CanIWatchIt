@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_searchFragment_to_titleFragment"
             app:destination="@id/titleFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_servicesFragment"
+            app:destination="@id/servicesFragment" />
     </fragment>
     <fragment
         android:id="@+id/servicesFragment"
@@ -20,17 +23,8 @@
         android:label="fragment_services"
         tools:layout="@layout/fragment_services" >
         <action
-            android:id="@+id/action_servicesFragment_to_titleFragment"
-            app:destination="@id/titleFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/trackingFragment"
-        android:name="com.example.caniwatchitapplication.ui.view.fragments.TrackingFragment"
-        android:label="fragment_tracking"
-        tools:layout="@layout/fragment_tracking" >
-        <action
-            android:id="@+id/action_trackingFragment_to_titleFragment"
-            app:destination="@id/titleFragment" />
+            android:id="@+id/action_servicesFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/titleFragment"

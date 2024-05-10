@@ -4,4 +4,6 @@
     <string name="plot_overview_example">When Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of only two years left to live. He becomes filled with a sense of fearlessness and an unrelenting desire to secure his family\'s financial future at any cost as he enters the dangerous world of drugs and crime.</string>
     <string name="service_image_content_description">Subscription service available in Spain</string>
     <string name="explicit_search_hint">Comienza a buscar ⬆️</string>
+    <string name="title_has_no_services">Este título no está disponible en ninguna plataforma</string>
+    <string name="select_at_least_one_service">Debes seleccionar al menos una plataforma de streaming.</string>
 </resources>

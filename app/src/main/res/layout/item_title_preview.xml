@@ -97,5 +97,17 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvTitleHasNoServices"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:visibility="invisible"
+        android:text="@string/title_has_no_services"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivMovieImage"
+        app:layout_constraintTop_toBottomOf="@id/tvPlotOverview" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

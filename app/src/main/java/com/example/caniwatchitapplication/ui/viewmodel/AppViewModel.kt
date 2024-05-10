@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.caniwatchitapplication.data.model.Service
 import com.example.caniwatchitapplication.data.model.ServicesResponse
 import com.example.caniwatchitapplication.data.model.Title
 import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
@@ -46,6 +47,18 @@ class AppViewModel(
                 else -> _searchedTitles.postValue(Resource.Error("Json to Kotlin conversion failure"))
             }
         }
+    }
+    
+    fun upsertSubscribedService(service: Service) = viewModelScope.launch {
+        
+        repository.upsertSubscribedService(service)
+    }
+    
+    fun getAllSubscribedServices() = repository.getAllSubscribedServices()
+    
+    fun deleteSubscribedService(service: Service) = viewModelScope.launch {
+        
+        repository.deleteSubscribedService(service)
     }
     
     private fun getAvailableServices() = viewModelScope.launch {

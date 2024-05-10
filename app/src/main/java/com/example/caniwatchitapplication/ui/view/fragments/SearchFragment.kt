@@ -12,9 +12,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.databinding.FragmentSearchBinding
+import com.example.caniwatchitapplication.ui.adapter.ServicesAdapter
+import com.example.caniwatchitapplication.ui.adapter.SubscribedServicesAdapter
 import com.example.caniwatchitapplication.ui.adapter.TitlesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
+import com.example.caniwatchitapplication.util.Constants.Companion.MIN_SERVICE_LOGO_PX_SIZE
 import com.example.caniwatchitapplication.util.Constants.Companion.SEARCH_FOR_TITLES_DELAY
 import com.example.caniwatchitapplication.util.Resource
 import kotlinx.coroutines.Job
@@ -27,6 +30,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel : AppViewModel
+    private lateinit var subscribedServicesAdapter: SubscribedServicesAdapter
     private lateinit var titlesAdapter: TitlesAdapter
     
     override fun onCreateView(
@@ -44,6 +48,11 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as MainActivity).appViewModel
         setupAdapter()
+        
+        viewModel.getAllSubscribedServices().observe(viewLifecycleOwner) {
+            
+            subscribedServicesAdapter.submitList(it)
+        }
         
         viewModel.searchedTitles.observe(viewLifecycleOwner) { response ->
             when(response)
@@ -102,9 +111,17 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     
     private fun setupAdapter()
     {
-        titlesAdapter = TitlesAdapter(viewModel)
+        subscribedServicesAdapter = SubscribedServicesAdapter()
+        titlesAdapter = TitlesAdapter(viewModel, viewLifecycleOwner)
+    
+        binding.servicesDisplayer.rvSubscribedServices.apply {
+            layoutManager = LinearLayoutManager(activity).apply {
+                orientation = LinearLayoutManager.HORIZONTAL
+            }
+            adapter = subscribedServicesAdapter
+        }
         
-        binding.rvSearchedMovies.apply {
+        binding.rvSearchedTitles.apply {
             this.layoutManager = LinearLayoutManager(activity)
             this.adapter = titlesAdapter
         }

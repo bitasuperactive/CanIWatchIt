@@ -9,7 +9,7 @@
         android:id="@+id/ivLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_margin="8dp"
         android:contentDescription="@string/service_image_content_description"
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -25,7 +25,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintEnd_toEndOf="@id/ivLogo"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
 
 

@@ -23,18 +23,18 @@
         android:id="@+id/lLayoutSubscribedServices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/design_default_color_surface"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etTitleToSearch">
 
-        <include layout="@layout/services_displayer"/>
+        <include layout="@layout/services_displayer"
+            android:id="@+id/servicesDisplayer" />
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchedMovies"
+        android:id="@+id/rv_searched_titles"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingBottom="50dp"

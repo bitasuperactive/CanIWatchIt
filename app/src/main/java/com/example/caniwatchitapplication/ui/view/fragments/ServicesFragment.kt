@@ -7,11 +7,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.databinding.FragmentServicesBinding
 import com.example.caniwatchitapplication.ui.adapter.ServicesAdapter
+import com.example.caniwatchitapplication.ui.adapter.SubscribedServicesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
+import com.example.caniwatchitapplication.util.Constants.Companion.MAX_SERVICE_LOGO_PX_SIZE
+import com.example.caniwatchitapplication.util.Constants.Companion.MIN_SERVICE_LOGO_PX_SIZE
 import com.example.caniwatchitapplication.util.Resource
 
 class ServicesFragment : Fragment(R.layout.fragment_services)
@@ -19,7 +23,8 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
     private var _binding: FragmentServicesBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: AppViewModel
-    private lateinit var servicesAdapter: ServicesAdapter
+    private lateinit var subscribedServicesAdapter: SubscribedServicesAdapter
+    private lateinit var availableServicesAdapter: ServicesAdapter
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +40,7 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
     {
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as MainActivity).appViewModel
-        setupAdapter()
+        setupAdapters()
         
         viewModel.availableServices.observe(viewLifecycleOwner) { response ->
             when(response)
@@ -47,7 +52,7 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
                 is Resource.Success -> {
                     response.data?.let {
                         hideProgressBar()
-                        servicesAdapter.submitList(it)
+                        availableServicesAdapter.submitList(it)
                     }
                 }
         
@@ -64,18 +69,41 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
             }
         }
         
-        servicesAdapter.setupOnClickListener {
-            // TODO - Not implemented.
+        availableServicesAdapter.setupItemOnClickListener { service, isChecked ->
+            
+            if (isChecked) {
+                viewModel.upsertSubscribedService(service)
+            } else {
+                viewModel.deleteSubscribedService(service)
+            }
+        }
+        
+        viewModel.getAllSubscribedServices().observe(viewLifecycleOwner) {
+            
+            subscribedServicesAdapter.submitList(it)
         }
     }
     
-    private fun setupAdapter()
+    private fun setupAdapters()
     {
-        servicesAdapter = ServicesAdapter(150)
+        subscribedServicesAdapter = SubscribedServicesAdapter()
+        availableServicesAdapter = ServicesAdapter(
+            MAX_SERVICE_LOGO_PX_SIZE,
+            viewModel.getAllSubscribedServices(),
+            viewLifecycleOwner,
+            false
+        )
+    
+        binding.servicesDisplayer.rvSubscribedServices.apply {
+            layoutManager = LinearLayoutManager(activity).apply {
+                orientation = LinearLayoutManager.HORIZONTAL
+            }
+            adapter = subscribedServicesAdapter
+        }
         
         binding.rvAvailableServices.apply {
-            layoutManager = GridLayoutManager(activity, 5)
-            adapter = servicesAdapter
+            layoutManager = GridLayoutManager(activity, 4)
+            adapter = availableServicesAdapter
             setHasFixedSize(true)
         }
     }

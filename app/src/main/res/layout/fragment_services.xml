@@ -11,12 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@color/design_default_color_surface"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <include layout="@layout/services_displayer"/>
+        <include layout="@layout/services_displayer"
+            android:id="@+id/servicesDisplayer" />
 
     </LinearLayout>
 
@@ -26,8 +26,8 @@
         android:layout_height="0dp"
         android:paddingBottom="50dp"
         android:layout_marginTop="16dp"
-        app:spanCount="5"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:spanCount="4"
+        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
