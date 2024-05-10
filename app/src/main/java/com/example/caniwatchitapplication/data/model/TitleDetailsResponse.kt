@@ -16,7 +16,8 @@ data class TitleDetailsResponse(
     @SerializedName("plot_overview")
     val plotOverview: String,
     val sources: List<TitleSource>,
-) : Serializable {
+) : Serializable
+{
     override fun hashCode(): Int
     {
         return id.hashCode()

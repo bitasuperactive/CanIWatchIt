@@ -1,10 +1,8 @@
 package com.example.caniwatchitapplication.ui.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.caniwatchitapplication.R
@@ -25,27 +23,27 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-    
+        
         val repository = AppRepository(AppDatabase(this))
         val appViewModelProvider = AppViewModelProvider(repository)
         
         appViewModel = ViewModelProvider(this, appViewModelProvider)[AppViewModel::class.java]
-    
+        
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.appNavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navHostFragment.navController)
-    
-        // Block the navigation until at least once service is selected.
-        appViewModel.getAllSubscribedServices().observe(this) {services ->
         
+        // Block the navigation until at least once service is selected.
+        appViewModel.getAllSubscribedServices().observe(this) { services ->
+            
             if (services.isEmpty())
             {
                 // Navigate to the services fragment using the navigation menu.
                 binding.bottomNavigationView.selectedItemId = R.id.servicesFragment
                 // Disable search fragment navigation.
                 binding.bottomNavigationView.menu.getItem(0).isEnabled = false
-    
+                
                 Snackbar.make(
                     binding.root,
                     getString(R.string.select_at_least_one_service),
@@ -53,7 +51,8 @@ class MainActivity : AppCompatActivity()
                 ).apply {
                     anchorView = binding.bottomNavigationView
                 }.show()
-            } else {
+            } else
+            {
                 // Enable search fragment navigation.
                 binding.bottomNavigationView.menu.getItem(0).isEnabled = true
             }

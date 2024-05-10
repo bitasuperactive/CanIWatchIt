@@ -12,7 +12,6 @@ import com.example.caniwatchitapplication.data.model.TitlesResponse
 import com.example.caniwatchitapplication.data.repository.AppRepository
 import com.example.caniwatchitapplication.util.Constants.Companion.MAX_SIMULTANEOUS_API_REQUESTS
 import com.example.caniwatchitapplication.util.Resource
-import com.example.caniwatchitapplication.util.Transformers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
@@ -42,7 +41,8 @@ class AppViewModel(
             _searchedTitles.postValue(handleTitlesResponse(response))
         } catch (t: Throwable)
         {
-            when (t) {
+            when (t)
+            {
                 is IOException -> _searchedTitles.postValue(Resource.Error("Network failure"))
                 else -> _searchedTitles.postValue(Resource.Error("Json to Kotlin conversion failure"))
             }
@@ -71,7 +71,8 @@ class AppViewModel(
             _availableServices.postValue(handleAvailableServicesResponse(response))
         } catch (t: Throwable)
         {
-            when (t) {
+            when (t)
+            {
                 is IOException -> _availableServices.postValue(Resource.Error("Network failure"))
                 else -> _availableServices.postValue(Resource.Error("Json to Kotlin conversion failure"))
             }
@@ -80,7 +81,8 @@ class AppViewModel(
     
     private fun handleAvailableServicesResponse(response: Response<ServicesResponse>): Resource<ServicesResponse>
     {
-        if (response.isSuccessful) {
+        if (response.isSuccessful)
+        {
             
             response.body()?.let {
                 return Resource.Success(it)
@@ -92,13 +94,14 @@ class AppViewModel(
     
     private suspend fun handleTitlesResponse(response: Response<TitlesResponse>): Resource<List<TitleDetailsResponse>>
     {
-        if (response.isSuccessful) {
+        if (response.isSuccessful)
+        {
             
             response.body()?.let {
                 return getTitlesDetails(it.titles)
             }
         }
-    
+        
         return Resource.Error(response.message(), null)
     }
     
@@ -112,7 +115,8 @@ class AppViewModel(
             val response = repository.getTitleDetails(title.id)
             val titleDetails = response.body()
             
-            if (response.isSuccessful && titleDetails != null) {
+            if (response.isSuccessful && titleDetails != null)
+            {
                 result.add(titleDetails)
                 continue
             }

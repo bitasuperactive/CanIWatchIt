@@ -5,28 +5,31 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:contentDescription="@string/service_image_content_description"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/service_image_content_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/RoundedShapeAppearanceOverlay"
         tools:src="@mipmap/ic_launcher_round" />
 
-    <CheckBox
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/cbService"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:buttonTint="@color/md_theme_primary"
+        android:checked="true"
+        android:paddingLeft="8dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintEnd_toEndOf="@id/ivLogo"
         tools:visibility="visible" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

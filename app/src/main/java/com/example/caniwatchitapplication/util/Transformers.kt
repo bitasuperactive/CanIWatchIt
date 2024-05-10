@@ -9,7 +9,10 @@ class Transformers
 {
     companion object
     {
-        fun getServicesFromSources(services: List<Service>, sources: List<TitleSource>): List<Service>
+        fun getServicesFromSources(
+            services: List<Service>,
+            sources: List<TitleSource>
+        ): List<Service>
         {
             return services.filter { service ->
                 sources.any { source ->

@@ -23,7 +23,7 @@ class TitlesAdapter(
 {
     inner class TitlesViewHolder(itemView: View) : ViewHolder(itemView)
     
-    object DiffUtilCallback: DiffUtil.ItemCallback<TitleDetailsResponse>()
+    object DiffUtilCallback : DiffUtil.ItemCallback<TitleDetailsResponse>()
     {
         override fun areItemsTheSame(
             oldItem: TitleDetailsResponse,
@@ -32,7 +32,7 @@ class TitlesAdapter(
         {
             return oldItem.id == newItem.id
         }
-    
+        
         override fun areContentsTheSame(
             oldItem: TitleDetailsResponse,
             newItem: TitleDetailsResponse
@@ -57,10 +57,12 @@ class TitlesAdapter(
     {
         val binding = ItemTitlePreviewBinding.bind(holder.itemView)
         val details = currentList[position]
-    
+        
         holder.itemView.apply {
-            Glide.with(this).load(details.poster).into(binding.ivMovieImage)
-    
+            details.poster.let {
+                Glide.with(this).load(it).into(binding.ivTitleImage)
+            }
+            
             binding.tvTitle.text = details.title
             binding.tvYear.text = details.year.toString()
             binding.tvUserRating.text = context.getString(R.string.user_score, details.userRating)
@@ -72,14 +74,14 @@ class TitlesAdapter(
                 }
             }
         }
-    
+        
         val servicesAdapter = ServicesAdapter(
             MIN_SERVICE_LOGO_PX_SIZE,
             viewModel.getAllSubscribedServices(),
             lifecycleOwner,
             true
         )
-    
+        
         viewModel.availableServices.observe(lifecycleOwner) { resource ->
             resource.data?.let { allAvailableServices ->
                 val titleAvailableServices =
@@ -90,9 +92,9 @@ class TitlesAdapter(
                 servicesAdapter.submitList(titleAvailableServices)
             }
         }
-    
-        binding.servicesDisplayer.rvSubscribedServices.apply {
         
+        binding.servicesDisplayer.rvSubscribedServices.apply {
+            
             layoutManager = LinearLayoutManager(context).apply {
                 orientation = LinearLayoutManager.HORIZONTAL
             }

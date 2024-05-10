@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/md_theme_secondaryContainer"
     tools:context=".ui.view.fragments.SearchFragment">
 
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/etTitleToSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Título de la película"
+        android:drawableEnd="@drawable/ic_erase_text"
+        android:hint="@string/search_hint"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <!-- TODO - Servicios suscritos: ¿RecyclerView horizontal? -->
     <LinearLayout
         android:id="@+id/lLayoutSubscribedServices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/md_theme_secondary80"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etTitleToSearch">
 
-        <include layout="@layout/services_displayer"
-            android:id="@+id/servicesDisplayer" />
+        <include
+            android:id="@+id/servicesDisplayer"
+            layout="@layout/services_displayer" />
 
     </LinearLayout>
 
@@ -37,14 +41,14 @@
         android:id="@+id/rv_searched_titles"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingBottom="50dp"
         android:layout_marginTop="16dp"
+        android:paddingBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedServices" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvHintToSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,15 +59,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedServices" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvNoTitlesFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/no_titles_found"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedServices" />
+
     <ProgressBar
         android:id="@+id/paginationProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:trackColor="@color/md_theme_primary"
         tools:visibility="visible" />
 
 

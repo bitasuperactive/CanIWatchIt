@@ -9,28 +9,25 @@
         android:id="@+id/searchFragment"
         android:name="com.example.caniwatchitapplication.ui.view.fragments.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_titleFragment"
-            app:destination="@id/titleFragment" />
-        <action
-            android:id="@+id/action_searchFragment_to_servicesFragment"
-            app:destination="@id/servicesFragment" />
+            app:destination="@id/titleFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/servicesFragment"
         android:name="com.example.caniwatchitapplication.ui.view.fragments.ServicesFragment"
         android:label="fragment_services"
-        tools:layout="@layout/fragment_services" >
-        <action
-            android:id="@+id/action_servicesFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_services" />
     <fragment
         android:id="@+id/titleFragment"
         android:name="com.example.caniwatchitapplication.ui.view.fragments.TitleFragment"
         android:label="fragment_title"
-        tools:layout="@layout/fragment_title" >
+        tools:layout="@layout/fragment_title">
         <argument
             android:name="titleDetails"
             app:argType="com.example.caniwatchitapplication.data.model.TitleDetailsResponse" />

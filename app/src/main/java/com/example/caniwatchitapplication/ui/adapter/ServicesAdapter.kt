@@ -34,7 +34,7 @@ class ServicesAdapter(
         {
             return oldItem.id == newItem.id
         }
-    
+        
         override fun areContentsTheSame(
             oldItem: Service,
             newItem: Service
@@ -59,7 +59,7 @@ class ServicesAdapter(
     {
         val binding = ItemServicePreviewBinding.bind(holder.itemView)
         val service = currentList[position]
-    
+        
         binding.ivLogo.apply {
             maxHeight = logoPxSize
             maxWidth = logoPxSize
@@ -67,29 +67,30 @@ class ServicesAdapter(
         
         holder.itemView.apply {
             Glide.with(context).load(service.logo100pxUrl).into(binding.ivLogo)
-    
+            
             setOnClickListener {
                 onItemClickListener?.let { func ->
                     // Show or hide CheckBox.
                     val oppIsChecked = !binding.cbService.isChecked
                     binding.cbService.isChecked = oppIsChecked
-                    binding.cbService.visibility = if (oppIsChecked) View.VISIBLE else View.INVISIBLE
+                    binding.cbService.visibility =
+                        if (oppIsChecked) View.VISIBLE else View.INVISIBLE
                     
                     func(service, oppIsChecked)
                 }
             }
         }
-    
+        
         subscribedServices.observe(lifecycleOwner) { subscribedServiceList ->
             val isServiceSubscribed = subscribedServiceList.any { subscribedService ->
                 service.logo100pxUrl == subscribedService.logo100pxUrl
             }
-        
+            
             binding.cbService.isChecked = isServiceSubscribed
             // We just want the CheckBox to be visible in the RecyclerView that is not related to the titles search.
             binding.cbService.visibility =
                 if (!isTitleRelated && isServiceSubscribed) View.VISIBLE else View.INVISIBLE
-        
+            
             if (isTitleRelated && !isServiceSubscribed)
             {
                 // Gray out the image if the title's service is not subscribed.

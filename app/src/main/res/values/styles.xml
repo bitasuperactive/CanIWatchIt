@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Estilo para la forma de las esquinas redondeadas -->
+    <style name="RoundedShapeAppearanceOverlay">
+        <!-- Define un radio específico para las esquinas -->
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="BottomNavigationView">
+        <!-- Cambia el color del fondo del menú -->
+        <item name="android:background">@color/md_theme_primaryContainer</item>
+        <!-- Cambia el color del texto de los elementos seleccionados -->
+        <item name="itemTextColor">@color/md_theme_primary_highContrast</item>
+        <!-- Cambia el color del texto de los elementos seleccionados -->
+        <item name="itemIconTint">@color/md_theme_primary</item>
+    </style>
+
+</resources>

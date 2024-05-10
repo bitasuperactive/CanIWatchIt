@@ -1,13 +1,8 @@
 package com.example.caniwatchitapplication.ui.adapter
 
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -17,8 +12,9 @@ import com.example.caniwatchitapplication.data.model.Service
 import com.example.caniwatchitapplication.databinding.ItemServicePreviewBinding
 import com.example.caniwatchitapplication.util.Constants.Companion.MIN_SERVICE_LOGO_PX_SIZE
 
-class SubscribedServicesAdapter(
-) : ListAdapter<Service, SubscribedServicesAdapter.SubscribedServicesViewHolder>(DiffUtilItemCallback)
+class SubscribedServicesAdapter : ListAdapter<Service, SubscribedServicesAdapter.SubscribedServicesViewHolder>(
+    DiffUtilItemCallback
+)
 {
     inner class SubscribedServicesViewHolder(view: View) : ViewHolder(view)
     

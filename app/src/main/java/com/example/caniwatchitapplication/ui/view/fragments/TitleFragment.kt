@@ -25,7 +25,7 @@ class TitleFragment : Fragment(R.layout.fragment_title)
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View?
+    ): View
     {
         _binding = FragmentTitleBinding.inflate(inflater, container, false)
         return binding.root
@@ -51,19 +51,19 @@ class TitleFragment : Fragment(R.layout.fragment_title)
             super.onPageStarted(view, url, favicon)
             showProgressBar()
         }
-    
+        
         override fun onPageCommitVisible(view: WebView?, url: String?)
         {
             super.onPageCommitVisible(view, url)
             hideProgressBar()
         }
-    
+        
         override fun onPageFinished(view: WebView?, url: String?)
         {
             super.onPageFinished(view, url)
             hideProgressBar()
         }
-    
+        
         override fun onReceivedError(
             view: WebView?,
             request: WebResourceRequest?,

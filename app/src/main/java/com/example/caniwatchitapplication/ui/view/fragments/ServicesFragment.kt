@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,8 +14,8 @@ import com.example.caniwatchitapplication.ui.adapter.SubscribedServicesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
 import com.example.caniwatchitapplication.util.Constants.Companion.MAX_SERVICE_LOGO_PX_SIZE
-import com.example.caniwatchitapplication.util.Constants.Companion.MIN_SERVICE_LOGO_PX_SIZE
 import com.example.caniwatchitapplication.util.Resource
+import com.google.android.material.snackbar.Snackbar
 
 class ServicesFragment : Fragment(R.layout.fragment_services)
 {
@@ -30,7 +29,7 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View?
+    ): View
     {
         _binding = FragmentServicesBinding.inflate(inflater, container, false)
         return binding.root
@@ -43,27 +42,32 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
         setupAdapters()
         
         viewModel.availableServices.observe(viewLifecycleOwner) { response ->
-            when(response)
+            when (response)
             {
-                is Resource.Loading -> {
+                is Resource.Loading ->
+                {
                     showProgressBar()
                 }
-        
-                is Resource.Success -> {
+                
+                is Resource.Success ->
+                {
                     response.data?.let {
                         hideProgressBar()
                         availableServicesAdapter.submitList(it)
                     }
                 }
-        
-                is Resource.Error -> {
+                
+                is Resource.Error ->
+                {
                     response.message?.let {
                         hideProgressBar()
-                        Toast.makeText(
-                            activity,
+                        Snackbar.make(
+                            binding.root,
                             "Se ha producido un error: $it",
-                            Toast.LENGTH_LONG
-                        ).show()
+                            Snackbar.LENGTH_LONG
+                        ).apply {
+                            setAnchorView(R.id.bottomNavigationView)
+                        }.show()
                     }
                 }
             }
@@ -71,9 +75,11 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
         
         availableServicesAdapter.setupItemOnClickListener { service, isChecked ->
             
-            if (isChecked) {
+            if (isChecked)
+            {
                 viewModel.upsertSubscribedService(service)
-            } else {
+            } else
+            {
                 viewModel.deleteSubscribedService(service)
             }
         }
@@ -93,7 +99,7 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
             viewLifecycleOwner,
             false
         )
-    
+        
         binding.servicesDisplayer.rvSubscribedServices.apply {
             layoutManager = LinearLayoutManager(activity).apply {
                 orientation = LinearLayoutManager.HORIZONTAL

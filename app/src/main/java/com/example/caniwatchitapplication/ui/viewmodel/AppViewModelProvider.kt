@@ -10,7 +10,8 @@ class AppViewModelProvider(
 {
     override fun <T : ViewModel> create(modelClass: Class<T>): T
     {
-        if (modelClass.isAssignableFrom(AppViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(AppViewModel::class.java))
+        {
             return AppViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
