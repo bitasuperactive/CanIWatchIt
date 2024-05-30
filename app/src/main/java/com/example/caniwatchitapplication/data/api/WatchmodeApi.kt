@@ -1,11 +1,12 @@
 package com.example.caniwatchitapplication.data.api
 
-import com.example.caniwatchitapplication.data.model.ServicesResponse
+import com.example.caniwatchitapplication.data.model.QuotaResponse
+import com.example.caniwatchitapplication.data.model.StreamingSourcesResponse
 import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
 import com.example.caniwatchitapplication.data.model.TitlesResponse
 import com.example.caniwatchitapplication.util.Constants.Companion.API_KEY
-import com.example.caniwatchitapplication.util.Constants.Companion.SERVICE_REGIONS
-import com.example.caniwatchitapplication.util.Constants.Companion.SERVICE_TYPES
+import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_REGIONS
+import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_TYPES
 import com.example.caniwatchitapplication.util.Constants.Companion.TITLE_LANGUAGE
 import com.example.caniwatchitapplication.util.Constants.Companion.TITLE_TYPES
 import retrofit2.Response
@@ -15,15 +16,21 @@ import retrofit2.http.Query
 
 interface WatchmodeApi
 {
+    @GET("/v1/status/")
+    suspend fun getQuota(
+        @Query("apiKey")
+        apiKey: String = API_KEY
+    ): Response<QuotaResponse>
+
     @GET("/v1/sources/")
-    suspend fun getAllSubscriptionServices(
+    suspend fun getAllStreamingSources(
         @Query("apiKey")
         apiKey: String = API_KEY,
         @Query("types")
-        types: String = SERVICE_TYPES,
+        types: String = STREAMING_SOURCE_TYPES,
         @Query("regions")
-        regions: String = SERVICE_REGIONS
-    ): Response<ServicesResponse>
+        regions: String = STREAMING_SOURCE_REGIONS
+    ): Response<StreamingSourcesResponse>
     
     @GET("/v1/search/")
     suspend fun searchForTitles(

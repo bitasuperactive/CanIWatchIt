@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="|"
+            android:text="@string/in_line_separator"
             android:textColor="@color/md_theme_inverseSurface"
             android:textSize="11sp"
             app:layout_constraintStart_toEndOf="@+id/tvYear"
@@ -92,7 +92,7 @@
             tools:text="@string/plot_overview_example" />
 
         <LinearLayout
-            android:id="@+id/lLayoutSubscribedServices"
+            android:id="@+id/lLayoutSubscribedStreamingSources"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -103,18 +103,18 @@
             app:layout_constraintTop_toBottomOf="@id/tvPlotOverview">
 
             <include
-                android:id="@+id/servicesDisplayer"
-                layout="@layout/services_displayer" />
+                android:id="@+id/streamingSourcesDisplayer"
+                layout="@layout/streaming_sources_displayer" />
 
         </LinearLayout>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvTitleHasNoServices"
+            android:id="@+id/tvTitleHasNoStreamingSources"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:text="@string/title_has_no_services"
+            android:text="@string/title_has_no_streaming_sources"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/ivTitleImage"

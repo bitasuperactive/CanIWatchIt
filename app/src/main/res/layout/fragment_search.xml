@@ -21,7 +21,7 @@
 
 
     <LinearLayout
-        android:id="@+id/lLayoutSubscribedServices"
+        android:id="@+id/lLayoutSubscribedStreamingSources"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -32,8 +32,8 @@
         app:layout_constraintTop_toBottomOf="@id/etTitleToSearch">
 
         <include
-            android:id="@+id/servicesDisplayer"
-            layout="@layout/services_displayer" />
+            android:id="@+id/streamingSourcesDisplayer"
+            layout="@layout/streaming_sources_displayer" />
 
     </LinearLayout>
 
@@ -46,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedServices" />
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvHintToSearch"
@@ -57,7 +57,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedServices" />
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvNoTitlesFound"
@@ -69,7 +69,7 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedServices" />
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources" />
 
     <ProgressBar
         android:id="@+id/paginationProgressBar"

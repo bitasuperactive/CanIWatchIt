@@ -5,12 +5,12 @@
         android:id="@+id/searchFragment"
         android:enabled="true"
         android:icon="@drawable/ic_search"
-        android:title="Buscar" />
+        android:title="@string/search" />
 
     <item
-        android:id="@+id/servicesFragment"
+        android:id="@+id/streamingSourcesFragment"
         android:enabled="true"
         android:icon="@drawable/ic_streaming"
-        android:title="Plataformas" />
+        android:title="@string/streaming_platforms" />
 
 </menu>

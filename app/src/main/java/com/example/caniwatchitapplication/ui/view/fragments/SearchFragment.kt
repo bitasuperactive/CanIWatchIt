@@ -1,8 +1,8 @@
 package com.example.caniwatchitapplication.ui.view.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -15,7 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.databinding.FragmentSearchBinding
-import com.example.caniwatchitapplication.ui.adapter.SubscribedServicesAdapter
+import com.example.caniwatchitapplication.ui.adapter.SubscribedStreamingSourcesAdapter
 import com.example.caniwatchitapplication.ui.adapter.TitlesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
@@ -32,7 +32,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: AppViewModel
-    private lateinit var subscribedServicesAdapter: SubscribedServicesAdapter
+    private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
     private lateinit var titlesAdapter: TitlesAdapter
     
     override fun onCreateView(
@@ -45,15 +45,16 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         return binding.root
     }
     
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as MainActivity).appViewModel
         setupAdapter()
         
-        viewModel.getAllSubscribedServices().observe(viewLifecycleOwner) {
+        viewModel.getAllSubscribedStreamingSources().observe(viewLifecycleOwner) {
             
-            subscribedServicesAdapter.submitList(it)
+            subscribedStreamingSourcesAdapter.submitList(it)
         }
         
         binding.tvHintToSearch.setOnClickListener {
@@ -67,6 +68,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         
         // Set functionality of the delete image inside the EditText.
         binding.etTitleToSearch.setOnTouchListener { _, event ->
+            view.performClick()
+
             if (event.action == MotionEvent.ACTION_UP)
             {
                 val drawableEnd =
@@ -80,8 +83,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
             false
         }
         
-        viewModel.searchedTitles.observe(viewLifecycleOwner) { response ->
-            when (response)
+        viewModel.searchedTitles.observe(viewLifecycleOwner) { resource ->
+            when (resource)
             {
                 is Resource.Loading ->
                 {
@@ -90,19 +93,19 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 
                 is Resource.Success ->
                 {
-                    response.data?.let { response ->
+                    resource.data?.let { responseList ->
                         hideProgressBar()
                         val titlesOrderedBySource =
-                            response.sortedBy{ it.sources.isEmpty() }
+                            responseList.sortedBy{ it.streamingSourcesIds.isEmpty() }
                         titlesAdapter.submitList(titlesOrderedBySource)
                         binding.tvNoTitlesFound.visibility =
-                            if (response.isEmpty()) View.VISIBLE else View.INVISIBLE
+                            if (responseList.isEmpty()) View.VISIBLE else View.INVISIBLE
                     }
                 }
                 
                 is Resource.Error ->
                 {
-                    response.message?.let {
+                    resource.message?.let {
                         hideProgressBar()
                         Snackbar.make(
                             binding.root,
@@ -148,14 +151,14 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     
     private fun setupAdapter()
     {
-        subscribedServicesAdapter = SubscribedServicesAdapter()
+        subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
         titlesAdapter = TitlesAdapter(viewModel, viewLifecycleOwner)
         
-        binding.servicesDisplayer.rvSubscribedServices.apply {
+        binding.streamingSourcesDisplayer.rvSubscribedStreamingSources.apply {
             layoutManager = LinearLayoutManager(activity).apply {
                 orientation = LinearLayoutManager.HORIZONTAL
             }
-            adapter = subscribedServicesAdapter
+            adapter = subscribedStreamingSourcesAdapter
         }
         
         binding.rvSearchedTitles.apply {

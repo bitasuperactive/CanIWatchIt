@@ -19,10 +19,10 @@
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
-        android:id="@+id/servicesFragment"
-        android:name="com.example.caniwatchitapplication.ui.view.fragments.ServicesFragment"
+        android:id="@+id/streamingSourcesFragment"
+        android:name="com.example.caniwatchitapplication.ui.view.fragments.StreamingSourcesFragment"
         android:label="fragment_services"
-        tools:layout="@layout/fragment_services" />
+        tools:layout="@layout/fragment_streaming_sources" />
     <fragment
         android:id="@+id/titleFragment"
         android:name="com.example.caniwatchitapplication.ui.view.fragments.TitleFragment"

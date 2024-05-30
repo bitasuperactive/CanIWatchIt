@@ -13,7 +13,7 @@ import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
 import com.example.caniwatchitapplication.databinding.ItemTitlePreviewBinding
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
-import com.example.caniwatchitapplication.util.Constants.Companion.MIN_SERVICE_LOGO_PX_SIZE
+import com.example.caniwatchitapplication.util.Constants.Companion.MIN_STREAMING_SOURCE_LOGO_PX_SIZE
 import com.example.caniwatchitapplication.util.Transformers
 
 class TitlesAdapter(
@@ -56,49 +56,49 @@ class TitlesAdapter(
     override fun onBindViewHolder(holder: TitlesViewHolder, position: Int)
     {
         val binding = ItemTitlePreviewBinding.bind(holder.itemView)
-        val details = currentList[position]
+        val titleDetails = currentList[position]
         
         holder.itemView.apply {
-            details.poster.let {
+            titleDetails.poster.let {
                 Glide.with(this).load(it).into(binding.ivTitleImage)
             }
             
-            binding.tvTitle.text = details.title
-            binding.tvYear.text = details.year.toString()
-            binding.tvUserRating.text = context.getString(R.string.user_score, details.userRating)
-            binding.tvPlotOverview.text = details.plotOverview
+            binding.tvTitle.text = titleDetails.title
+            binding.tvYear.text = titleDetails.year.toString()
+            binding.tvUserRating.text = context.getString(R.string.user_score, titleDetails.userRating)
+            binding.tvPlotOverview.text = titleDetails.plotOverview
             
             setOnClickListener {
                 onItemClickListener?.let {
-                    it(details)
+                    it(titleDetails)
                 }
             }
         }
         
-        val servicesAdapter = ServicesAdapter(
-            MIN_SERVICE_LOGO_PX_SIZE,
-            viewModel.getAllSubscribedServices(),
+        val streamingSourcesAdapter = StreamingSourcesAdapter(
+            MIN_STREAMING_SOURCE_LOGO_PX_SIZE,
+            viewModel.getAllSubscribedStreamingSources(),
             lifecycleOwner,
             true
         )
         
-        viewModel.availableServices.observe(lifecycleOwner) { resource ->
-            resource.data?.let { allAvailableServices ->
-                val titleAvailableServices =
-                    Transformers.getServicesFromSources(allAvailableServices, details.sources)
+        viewModel.availableStreamingSources.observe(lifecycleOwner) { resource ->
+            resource.data?.let { allAvailableSources ->
+                val titleAvailableSources =
+                    Transformers.getStreamingSourcesFromTitles(allAvailableSources, titleDetails.streamingSourcesIds)
                 
-                binding.tvTitleHasNoServices.visibility =
-                    if (titleAvailableServices.isEmpty()) View.VISIBLE else View.INVISIBLE
-                servicesAdapter.submitList(titleAvailableServices)
+                binding.tvTitleHasNoStreamingSources.visibility =
+                    if (titleAvailableSources.isEmpty()) View.VISIBLE else View.INVISIBLE
+                streamingSourcesAdapter.submitList(titleAvailableSources)
             }
         }
         
-        binding.servicesDisplayer.rvSubscribedServices.apply {
+        binding.streamingSourcesDisplayer.rvSubscribedStreamingSources.apply {
             
             layoutManager = LinearLayoutManager(context).apply {
                 orientation = LinearLayoutManager.HORIZONTAL
             }
-            adapter = servicesAdapter
+            adapter = streamingSourcesAdapter
         }
     }
     

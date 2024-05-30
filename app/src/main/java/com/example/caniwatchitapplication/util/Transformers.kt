@@ -1,24 +1,24 @@
 package com.example.caniwatchitapplication.util
 
-import com.example.caniwatchitapplication.data.model.Service
-import com.example.caniwatchitapplication.data.model.TitleSource
-import com.example.caniwatchitapplication.util.Constants.Companion.SERVICE_REGIONS
-import com.example.caniwatchitapplication.util.Constants.Companion.SERVICE_TYPES
+import com.example.caniwatchitapplication.data.model.StreamingSource
+import com.example.caniwatchitapplication.data.model.TitleStreamingSource
+import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_REGIONS
+import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_TYPES
 
 class Transformers
 {
     companion object
     {
-        fun getServicesFromSources(
-            services: List<Service>,
-            sources: List<TitleSource>
-        ): List<Service>
+        fun getStreamingSourcesFromTitles(
+            streamingSources: List<StreamingSource>,
+            titleStreamingSources: List<TitleStreamingSource>
+        ): List<StreamingSource>
         {
-            return services.filter { service ->
-                sources.any { source ->
-                    source.id == service.id
-                            && source.type == SERVICE_TYPES
-                            && source.region == SERVICE_REGIONS
+            return streamingSources.filter { source ->
+                titleStreamingSources.any { titleSource ->
+                    titleSource.id == source.id
+                            && titleSource.type == STREAMING_SOURCE_TYPES
+                            && titleSource.region == STREAMING_SOURCE_REGIONS
                 }
             }
         }

@@ -1,20 +1,20 @@
 package com.example.caniwatchitapplication.data.db
 
 import androidx.room.TypeConverter
-import com.example.caniwatchitapplication.data.model.Service
+import com.example.caniwatchitapplication.data.model.StreamingSource
 
 class Converters
 {
     @TypeConverter
-    fun fromService(service: Service): String
+    fun fromStreamingSource(source: StreamingSource): String
     {
-        return service.logo100pxUrl
+        return source.logo100pxUrl
     }
     
     @TypeConverter
-    fun toService(logoUrl: String): Service
+    fun toStreamingSource(logoUrl: String): StreamingSource
     {
         // TODO - Not fully implemented.
-        return Service(0, "", logoUrl)
+        return StreamingSource(0, "", logoUrl)
     }
 }

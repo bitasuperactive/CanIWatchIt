@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/service_image_content_description"
+        android:contentDescription="@string/streaming_source_image_content_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,16 +20,17 @@
         tools:src="@mipmap/ic_launcher_round" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/cbService"
+        android:id="@+id/cb_streaming_source"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:buttonTint="@color/md_theme_primary"
         android:checked="true"
-        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/ivLogo"
         app:layout_constraintEnd_toEndOf="@id/ivLogo"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        tools:ignore="RtlSymmetry" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

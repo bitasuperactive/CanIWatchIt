@@ -5,16 +5,17 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.caniwatchitapplication.data.model.Service
+import com.example.caniwatchitapplication.data.model.StreamingSource
 
 @Database(
-    entities = [Service::class],
-    version = 1
+    entities = [StreamingSource::class],
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase()
 {
-    abstract fun getServiceDao(): SubscribedServiceDao
+    abstract fun getSubscribedStreamingSourcesDao(): SubscribedStreamingSourcesDao
     
     companion object
     {

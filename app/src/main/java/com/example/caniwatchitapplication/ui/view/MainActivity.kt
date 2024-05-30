@@ -31,22 +31,21 @@ class MainActivity : AppCompatActivity()
         
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.appNavHostFragment) as NavHostFragment
-        val navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navHostFragment.navController)
         
         // Block the navigation until at least once service is selected.
-        appViewModel.getAllSubscribedServices().observe(this) { services ->
+        appViewModel.getAllSubscribedStreamingSources().observe(this) { services ->
             
             if (services.isEmpty())
             {
                 // Navigate to the services fragment using the navigation menu.
-                binding.bottomNavigationView.selectedItemId = R.id.servicesFragment
+                binding.bottomNavigationView.selectedItemId = R.id.streamingSourcesFragment
                 // Disable search fragment navigation.
                 binding.bottomNavigationView.menu.getItem(0).isEnabled = false
                 
                 Snackbar.make(
                     binding.root,
-                    getString(R.string.select_at_least_one_service),
+                    getString(R.string.select_at_least_one_streaming_source),
                     Snackbar.LENGTH_LONG
                 ).apply {
                     anchorView = binding.bottomNavigationView

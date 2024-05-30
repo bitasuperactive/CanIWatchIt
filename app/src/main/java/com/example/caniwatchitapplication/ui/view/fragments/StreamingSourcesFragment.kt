@@ -8,22 +8,22 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caniwatchitapplication.R
-import com.example.caniwatchitapplication.databinding.FragmentServicesBinding
-import com.example.caniwatchitapplication.ui.adapter.ServicesAdapter
-import com.example.caniwatchitapplication.ui.adapter.SubscribedServicesAdapter
+import com.example.caniwatchitapplication.databinding.FragmentStreamingSourcesBinding
+import com.example.caniwatchitapplication.ui.adapter.StreamingSourcesAdapter
+import com.example.caniwatchitapplication.ui.adapter.SubscribedStreamingSourcesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
-import com.example.caniwatchitapplication.util.Constants.Companion.MAX_SERVICE_LOGO_PX_SIZE
+import com.example.caniwatchitapplication.util.Constants.Companion.MAX_STREAMING_SOURCE_LOGO_PX_SIZE
 import com.example.caniwatchitapplication.util.Resource
 import com.google.android.material.snackbar.Snackbar
 
-class ServicesFragment : Fragment(R.layout.fragment_services)
+class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
 {
-    private var _binding: FragmentServicesBinding? = null
+    private var _binding: FragmentStreamingSourcesBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: AppViewModel
-    private lateinit var subscribedServicesAdapter: SubscribedServicesAdapter
-    private lateinit var availableServicesAdapter: ServicesAdapter
+    private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
+    private lateinit var availableStreamingSourcesAdapter: StreamingSourcesAdapter
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +31,7 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
         savedInstanceState: Bundle?
     ): View
     {
-        _binding = FragmentServicesBinding.inflate(inflater, container, false)
+        _binding = FragmentStreamingSourcesBinding.inflate(inflater, container, false)
         return binding.root
     }
     
@@ -41,7 +41,7 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
         viewModel = (activity as MainActivity).appViewModel
         setupAdapters()
         
-        viewModel.availableServices.observe(viewLifecycleOwner) { response ->
+        viewModel.availableStreamingSources.observe(viewLifecycleOwner) { response ->
             when (response)
             {
                 is Resource.Loading ->
@@ -53,7 +53,7 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
                 {
                     response.data?.let {
                         hideProgressBar()
-                        availableServicesAdapter.submitList(it)
+                        availableStreamingSourcesAdapter.submitList(it)
                     }
                 }
                 
@@ -73,43 +73,43 @@ class ServicesFragment : Fragment(R.layout.fragment_services)
             }
         }
         
-        availableServicesAdapter.setupItemOnClickListener { service, isChecked ->
+        availableStreamingSourcesAdapter.setupItemOnClickListener { service, isChecked ->
             
             if (isChecked)
             {
-                viewModel.upsertSubscribedService(service)
+                viewModel.upsertSubscribedStreamingSource(service)
             } else
             {
-                viewModel.deleteSubscribedService(service)
+                viewModel.deleteSubscribedStreamingSource(service)
             }
         }
         
-        viewModel.getAllSubscribedServices().observe(viewLifecycleOwner) {
+        viewModel.getAllSubscribedStreamingSources().observe(viewLifecycleOwner) {
             
-            subscribedServicesAdapter.submitList(it)
+            subscribedStreamingSourcesAdapter.submitList(it)
         }
     }
     
     private fun setupAdapters()
     {
-        subscribedServicesAdapter = SubscribedServicesAdapter()
-        availableServicesAdapter = ServicesAdapter(
-            MAX_SERVICE_LOGO_PX_SIZE,
-            viewModel.getAllSubscribedServices(),
+        subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
+        availableStreamingSourcesAdapter = StreamingSourcesAdapter(
+            MAX_STREAMING_SOURCE_LOGO_PX_SIZE,
+            viewModel.getAllSubscribedStreamingSources(),
             viewLifecycleOwner,
             false
         )
         
-        binding.servicesDisplayer.rvSubscribedServices.apply {
+        binding.streamingSourcesDisplayer.rvSubscribedStreamingSources.apply {
             layoutManager = LinearLayoutManager(activity).apply {
                 orientation = LinearLayoutManager.HORIZONTAL
             }
-            adapter = subscribedServicesAdapter
+            adapter = subscribedStreamingSourcesAdapter
         }
         
-        binding.rvAvailableServices.apply {
+        binding.rvAvailableStreamingSources.apply {
             layoutManager = GridLayoutManager(activity, 4)
-            adapter = availableServicesAdapter
+            adapter = availableStreamingSourcesAdapter
             setHasFixedSize(true)
         }
     }

@@ -4,8 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+// TODO - Rename table to "subscribed_streaming_sources".
 @Entity("subscribed_services")
-data class Service(
+data class StreamingSource(
     @PrimaryKey(false)
     val id: Int,
     val name: String,

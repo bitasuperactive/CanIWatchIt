@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_theme_secondaryContainer"
-    tools:context=".ui.view.fragments.ServicesFragment">
+    tools:context=".ui.view.fragments.StreamingSourcesFragment">
 
     <LinearLayout
-        android:id="@+id/lLayoutSubscribedServices"
+        android:id="@+id/lLayoutSubscribedStreamingSources"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -18,20 +18,20 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <include
-            android:id="@+id/servicesDisplayer"
-            layout="@layout/services_displayer" />
+            android:id="@+id/streamingSourcesDisplayer"
+            layout="@layout/streaming_sources_displayer" />
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvAvailableServices"
+        android:id="@+id/rvAvailableStreamingSources"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedServices"
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources"
         tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:spanCount="4" />
 

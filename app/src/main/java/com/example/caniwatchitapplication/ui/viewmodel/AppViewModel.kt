@@ -4,31 +4,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caniwatchitapplication.data.model.Service
-import com.example.caniwatchitapplication.data.model.ServicesResponse
-import com.example.caniwatchitapplication.data.model.Title
+import com.example.caniwatchitapplication.data.model.StreamingSource
+import com.example.caniwatchitapplication.data.model.StreamingSourcesResponse
 import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
-import com.example.caniwatchitapplication.data.model.TitlesResponse
 import com.example.caniwatchitapplication.data.repository.AppRepository
-import com.example.caniwatchitapplication.util.Constants.Companion.MAX_SIMULTANEOUS_API_REQUESTS
 import com.example.caniwatchitapplication.util.Resource
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import java.io.IOException
 
 class AppViewModel(
     private val repository: AppRepository
 ) : ViewModel()
 {
-    private val _availableServices = MutableLiveData<Resource<ServicesResponse>>()
+    private val _availableStreamingSources = MutableLiveData<Resource<StreamingSourcesResponse>>()
     private val _searchedTitles = MutableLiveData<Resource<List<TitleDetailsResponse>>>()
-    
-    val availableServices: LiveData<Resource<ServicesResponse>> = _availableServices
+
+    val availableStreamingSources: LiveData<Resource<StreamingSourcesResponse>> = _availableStreamingSources
     val searchedTitles: LiveData<Resource<List<TitleDetailsResponse>>> = _searchedTitles
     
     init
     {
-        getAvailableServices()
+        logQuota()
+        getAvailableStreamingSources()
     }
     
     fun searchForTitles(searchValue: String) = viewModelScope.launch {
@@ -37,8 +34,8 @@ class AppViewModel(
         
         try
         {
-            val response = repository.searchForTitles(searchValue)
-            _searchedTitles.postValue(handleTitlesResponse(response))
+            val resource = repository.searchForTitles(searchValue)
+            _searchedTitles.postValue(resource)
         } catch (t: Throwable)
         {
             when (t)
@@ -48,82 +45,39 @@ class AppViewModel(
             }
         }
     }
+
+    fun getAllSubscribedStreamingSources() = repository.getAllSubscribedStreamingSources()
     
-    fun upsertSubscribedService(service: Service) = viewModelScope.launch {
-        
-        repository.upsertSubscribedService(service)
+    fun upsertSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
+
+        repository.upsertSubscribedStreamingSource(streamingSource)
     }
     
-    fun getAllSubscribedServices() = repository.getAllSubscribedServices()
-    
-    fun deleteSubscribedService(service: Service) = viewModelScope.launch {
+    fun deleteSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
         
-        repository.deleteSubscribedService(service)
+        repository.deleteSubscribedStreamingSource(streamingSource)
     }
-    
-    private fun getAvailableServices() = viewModelScope.launch {
-        
-        _availableServices.postValue(Resource.Loading())
-        
+
+    private fun logQuota() = viewModelScope.launch {
+
+        repository.logQuota()
+    }
+
+    private fun getAvailableStreamingSources() = viewModelScope.launch {
+
+        _availableStreamingSources.postValue(Resource.Loading())
+
         try
         {
-            val response = repository.getAllSubscriptionServices()
-            _availableServices.postValue(handleAvailableServicesResponse(response))
+            val resource = repository.getAllSubscriptionStreamingSources()
+            _availableStreamingSources.postValue(resource)
         } catch (t: Throwable)
         {
             when (t)
             {
-                is IOException -> _availableServices.postValue(Resource.Error("Network failure"))
-                else -> _availableServices.postValue(Resource.Error("Json to Kotlin conversion failure"))
+                is IOException -> _availableStreamingSources.postValue(Resource.Error("Network failure"))
+                else -> _availableStreamingSources.postValue(Resource.Error("Json to Kotlin conversion failure"))
             }
         }
-    }
-    
-    private fun handleAvailableServicesResponse(response: Response<ServicesResponse>): Resource<ServicesResponse>
-    {
-        if (response.isSuccessful)
-        {
-            
-            response.body()?.let {
-                return Resource.Success(it)
-            }
-        }
-        
-        return Resource.Error(response.message(), response.body())
-    }
-    
-    private suspend fun handleTitlesResponse(response: Response<TitlesResponse>): Resource<List<TitleDetailsResponse>>
-    {
-        if (response.isSuccessful)
-        {
-            
-            response.body()?.let {
-                return getTitlesDetails(it.titles)
-            }
-        }
-        
-        return Resource.Error(response.message(), null)
-    }
-    
-    private suspend fun getTitlesDetails(titles: List<Title>): Resource<List<TitleDetailsResponse>>
-    {
-        val result = ArrayList<TitleDetailsResponse>(titles.size)
-        
-        // Calls limited by the following constant.
-        for (title in titles.take(MAX_SIMULTANEOUS_API_REQUESTS))
-        {
-            val response = repository.getTitleDetails(title.id)
-            val titleDetails = response.body()
-            
-            if (response.isSuccessful && titleDetails != null)
-            {
-                result.add(titleDetails)
-                continue
-            }
-            
-            return Resource.Error(response.message(), result)
-        }
-        
-        return Resource.Success(result)
     }
 }

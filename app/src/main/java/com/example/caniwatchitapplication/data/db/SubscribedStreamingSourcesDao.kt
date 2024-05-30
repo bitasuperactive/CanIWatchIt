@@ -6,17 +6,17 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.caniwatchitapplication.data.model.Service
+import com.example.caniwatchitapplication.data.model.StreamingSource
 
 @Dao
-interface SubscribedServiceDao
+interface SubscribedStreamingSourcesDao
 {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(service: Service): Long
+    suspend fun upsert(streamingSource: StreamingSource): Long
     
     @Query("SELECT * FROM subscribed_services")
-    fun getAllSubscribedServices(): LiveData<List<Service>>
+    fun getAllSubscribedStreamingSources(): LiveData<List<StreamingSource>>
     
     @Delete
-    suspend fun delete(service: Service)
+    suspend fun delete(streamingSource: StreamingSource)
 }
