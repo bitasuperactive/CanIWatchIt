@@ -14,7 +14,7 @@ import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
 import com.example.caniwatchitapplication.databinding.ItemTitlePreviewBinding
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
 import com.example.caniwatchitapplication.util.Constants.Companion.MIN_STREAMING_SOURCE_LOGO_PX_SIZE
-import com.example.caniwatchitapplication.util.Transformers
+import com.example.caniwatchitapplication.util.Transformations.Companion.filterByTitleSources
 
 class TitlesAdapter(
     private val viewModel: AppViewModel,
@@ -59,7 +59,7 @@ class TitlesAdapter(
         val titleDetails = currentList[position]
         
         holder.itemView.apply {
-            titleDetails.poster.let {
+            titleDetails.posterUrl.let {
                 Glide.with(this).load(it).into(binding.ivTitleImage)
             }
             
@@ -85,10 +85,11 @@ class TitlesAdapter(
         viewModel.availableStreamingSources.observe(lifecycleOwner) { resource ->
             resource.data?.let { allAvailableSources ->
                 val titleAvailableSources =
-                    Transformers.getStreamingSourcesFromTitles(allAvailableSources, titleDetails.streamingSourcesIds)
+                    allAvailableSources.filterByTitleSources(titleDetails.streamingSources)
                 
                 binding.tvTitleHasNoStreamingSources.visibility =
                     if (titleAvailableSources.isEmpty()) View.VISIBLE else View.INVISIBLE
+
                 streamingSourcesAdapter.submitList(titleAvailableSources)
             }
         }

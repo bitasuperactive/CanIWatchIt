@@ -48,12 +48,16 @@ class AppViewModel(
 
     fun getAllSubscribedStreamingSources() = repository.getAllSubscribedStreamingSources()
     
-    fun upsertSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
+    fun upsertSubscribedStreamingSource(
+        streamingSource: StreamingSource
+    ) = viewModelScope.launch {
 
         repository.upsertSubscribedStreamingSource(streamingSource)
     }
     
-    fun deleteSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
+    fun deleteSubscribedStreamingSource(
+        streamingSource: StreamingSource
+    ) = viewModelScope.launch {
         
         repository.deleteSubscribedStreamingSource(streamingSource)
     }
@@ -69,7 +73,7 @@ class AppViewModel(
 
         try
         {
-            val resource = repository.getAllSubscriptionStreamingSources()
+            val resource = repository.getAllStreamingSources()
             _availableStreamingSources.postValue(resource)
         } catch (t: Throwable)
         {

@@ -1,5 +1,8 @@
 package com.example.caniwatchitapplication.util
 
+/**
+ * Clase genérica que declara los estados de las peticiones a la api.
+ */
 sealed class Resource<T>(
     val data: T? = null,
     val message: String? = null

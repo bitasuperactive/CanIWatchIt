@@ -1,18 +1,21 @@
-package com.example.caniwatchitapplication.data.db
+package com.example.caniwatchitapplication.data.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.example.caniwatchitapplication.data.model.StreamingSource
+import com.example.caniwatchitapplication.data.database.dao.SubscribedStreamingSourcesDao
+import com.example.caniwatchitapplication.data.database.entities.SubscribedStreamingSourceEntity
+import com.example.caniwatchitapplication.util.Constants
 
+/**
+ * Crea una instancia única de la base de datos de Room.
+ */
 @Database(
-    entities = [StreamingSource::class],
+    entities = [SubscribedStreamingSourceEntity::class],
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase()
 {
     abstract fun getSubscribedStreamingSourcesDao(): SubscribedStreamingSourcesDao
@@ -33,7 +36,7 @@ abstract class AppDatabase : RoomDatabase()
             return Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "caniwatchit_db.db"
+                Constants.APP_DATABASE_NAME
             ).build()
         }
     }

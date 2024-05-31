@@ -1,15 +1,17 @@
 package com.example.caniwatchitapplication.data.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-// TODO - Rename table to "subscribed_streaming_sources".
-@Entity("subscribed_services")
+/**
+ * Clase de datos que representa una plataforma de streaming.
+ *
+ * @param id Identificador único en la api
+ * @param name Nombre comercial
+ * @param logoUrl Url del logo (100x100 píxeles)
+ */
 data class StreamingSource(
-    @PrimaryKey(false)
     val id: Int,
     val name: String,
     @SerializedName("logo_100px")
-    val logo100pxUrl: String,
+    val logoUrl: String,
 )

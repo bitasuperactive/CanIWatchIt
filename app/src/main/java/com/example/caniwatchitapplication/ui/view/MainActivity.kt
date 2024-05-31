@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.caniwatchitapplication.R
-import com.example.caniwatchitapplication.data.db.AppDatabase
+import com.example.caniwatchitapplication.data.database.AppDatabase
 import com.example.caniwatchitapplication.data.repository.AppRepository
 import com.example.caniwatchitapplication.databinding.ActivityMainBinding
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel

@@ -56,7 +56,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
             
             subscribedStreamingSourcesAdapter.submitList(it)
         }
-        
+
+        // TODO - COPY-PASTED
         binding.tvHintToSearch.setOnClickListener {
             
             binding.etTitleToSearch.requestFocus()
@@ -65,7 +66,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etTitleToSearch, InputMethodManager.SHOW_IMPLICIT)
         }
-        
+
+        // TODO - COPY-PASTED
         // Set functionality of the delete image inside the EditText.
         binding.etTitleToSearch.setOnTouchListener { _, event ->
             view.performClick()
@@ -95,8 +97,9 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 {
                     resource.data?.let { responseList ->
                         hideProgressBar()
+                        // TODO - DOESN'T WORK
                         val titlesOrderedBySource =
-                            responseList.sortedBy{ it.streamingSourcesIds.isEmpty() }
+                            responseList.sortedBy{ it.streamingSources.isEmpty() }
                         titlesAdapter.submitList(titlesOrderedBySource)
                         binding.tvNoTitlesFound.visibility =
                             if (responseList.isEmpty()) View.VISIBLE else View.INVISIBLE
@@ -133,6 +136,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                     } else
                     {
                         titlesAdapter.submitList(emptyList())
+                        binding.tvNoTitlesFound.visibility = View.INVISIBLE
                         showSearchHint()
                     }
                 }

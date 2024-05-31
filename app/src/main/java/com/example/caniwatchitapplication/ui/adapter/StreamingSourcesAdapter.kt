@@ -66,7 +66,7 @@ class StreamingSourcesAdapter(
         }
         
         holder.itemView.apply {
-            Glide.with(context).load(streamingSource.logo100pxUrl).into(binding.ivLogo)
+            Glide.with(context).load(streamingSource.logoUrl).into(binding.ivLogo)
             
             setOnClickListener {
                 onItemClickListener?.let { func ->
@@ -83,7 +83,7 @@ class StreamingSourcesAdapter(
         
         subscribedStreamingSources.observe(lifecycleOwner) { streamingSources ->
             val isSubscribedToSource = streamingSources.any { source ->
-                streamingSource.logo100pxUrl == source.logo100pxUrl
+                streamingSource.logoUrl == source.logoUrl
             }
             
             binding.cbStreamingSource.isChecked = isSubscribedToSource

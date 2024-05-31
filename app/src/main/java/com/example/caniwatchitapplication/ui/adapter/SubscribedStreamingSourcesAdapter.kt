@@ -12,7 +12,8 @@ import com.example.caniwatchitapplication.data.model.StreamingSource
 import com.example.caniwatchitapplication.databinding.ItemStreamingSourcePreviewBinding
 import com.example.caniwatchitapplication.util.Constants.Companion.MIN_STREAMING_SOURCE_LOGO_PX_SIZE
 
-class SubscribedStreamingSourcesAdapter : ListAdapter<StreamingSource, SubscribedStreamingSourcesAdapter.SubscribedStreamingSourcesViewHolder>(
+class SubscribedStreamingSourcesAdapter : ListAdapter<StreamingSource,
+        SubscribedStreamingSourcesAdapter.SubscribedStreamingSourcesViewHolder>(
     DiffUtilItemCallback
 )
 {
@@ -59,7 +60,7 @@ class SubscribedStreamingSourcesAdapter : ListAdapter<StreamingSource, Subscribe
         }
         
         holder.itemView.apply {
-            Glide.with(context).load(service.logo100pxUrl).into(binding.ivLogo)
+            Glide.with(context).load(service.logoUrl).into(binding.ivLogo)
         }
     }
 }
