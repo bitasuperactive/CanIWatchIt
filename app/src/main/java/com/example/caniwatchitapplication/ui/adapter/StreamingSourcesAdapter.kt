@@ -1,110 +1,86 @@
 package com.example.caniwatchitapplication.ui.adapter
 
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
-import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.data.model.StreamingSource
 import com.example.caniwatchitapplication.databinding.ItemStreamingSourcePreviewBinding
+import com.example.caniwatchitapplication.util.Constants
 
+/**
+ * Adaptador para las plataformas de streaming disponibles.
+ *
+ * Características:
+ *
+ *      - Tamaño máximo para los iconos.
+ *      - Items clicables.
+ *      - CheckBox indicativo de las plataformas suscritas, se oculta si el item no está seleccionado.
+ *
+ * @param subscribedStreamingSources Lista de las plataformas de streaming suscritas por el usuario
+ * @param lifecycleOwner Propietario del ciclo de vida del adaptador
+ */
 class StreamingSourcesAdapter(
-    private val logoPxSize: Int,
     private val subscribedStreamingSources: LiveData<List<StreamingSource>> = MutableLiveData(),
-    private val lifecycleOwner: LifecycleOwner,
-    private val isTitleRelated: Boolean
-) : ListAdapter<StreamingSource, StreamingSourcesAdapter.StreamingSourceViewHolder>(DiffUtilItemCallback)
+    private val lifecycleOwner: LifecycleOwner
+) : BaseStreamingSourcesAdapter()
 {
-    inner class StreamingSourceViewHolder(view: View) : ViewHolder(view)
-    
-    object DiffUtilItemCallback : DiffUtil.ItemCallback<StreamingSource>()
-    {
-        override fun areItemsTheSame(
-            oldItem: StreamingSource,
-            newItem: StreamingSource
-        ): Boolean
-        {
-            return oldItem.id == newItem.id
-        }
-        
-        override fun areContentsTheSame(
-            oldItem: StreamingSource,
-            newItem: StreamingSource
-        ): Boolean
-        {
-            return oldItem == newItem
-        }
-    }
-    
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StreamingSourceViewHolder
-    {
-        return StreamingSourceViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_streaming_source_preview,
-                parent,
-                false
-            )
-        )
-    }
-    
-    override fun onBindViewHolder(holder: StreamingSourceViewHolder, position: Int)
+    override fun onBindViewHolder(holder: BaseStreamingSourcesViewHolder, position: Int)
     {
         val binding = ItemStreamingSourcePreviewBinding.bind(holder.itemView)
         val streamingSource = currentList[position]
-        
+
+        // Set maximum logo size
         binding.ivLogo.apply {
-            maxHeight = logoPxSize
-            maxWidth = logoPxSize
+            maxHeight = Constants.MAX_STREAMING_SOURCE_LOGO_PX_SIZE
+            maxWidth = Constants.MAX_STREAMING_SOURCE_LOGO_PX_SIZE
         }
-        
+
+        // Set logos image and click functionality
         holder.itemView.apply {
             Glide.with(context).load(streamingSource.logoUrl).into(binding.ivLogo)
-            
+
             setOnClickListener {
-                onItemClickListener?.let { func ->
-                    // Show or hide CheckBox.
-                    val oppIsChecked = !binding.cbStreamingSource.isChecked
-                    binding.cbStreamingSource.isChecked = oppIsChecked
+                onItemClickListener?.let { onItemClickHandler ->
+
+                    // Show/Hide CheckBox
+                    val checkToggled: Boolean = !binding.cbStreamingSource.isChecked
+                    binding.cbStreamingSource.isChecked = checkToggled
                     binding.cbStreamingSource.visibility =
-                        if (oppIsChecked) View.VISIBLE else View.INVISIBLE
-                    
-                    func(streamingSource, oppIsChecked)
+                        if (checkToggled) View.VISIBLE else View.INVISIBLE
+
+                    // Execute the listeners handler
+                    onItemClickHandler(streamingSource, checkToggled)
                 }
             }
         }
-        
-        subscribedStreamingSources.observe(lifecycleOwner) { streamingSources ->
-            val isSubscribedToSource = streamingSources.any { source ->
-                streamingSource.logoUrl == source.logoUrl
+
+        // Set CheckBox availability and state, and logos color filter
+        subscribedStreamingSources.observe(lifecycleOwner) { subscribedStreamingSources ->
+
+            val isSourceSubscribed = subscribedStreamingSources.any { subscribedSource ->
+                streamingSource.id == subscribedSource.id
             }
-            
-            binding.cbStreamingSource.isChecked = isSubscribedToSource
-            // We just want the CheckBox to be visible in the RecyclerView that is not related to the titles search.
+            binding.cbStreamingSource.isChecked = isSourceSubscribed
+
+            // Only show the CheckBox when its checked
             binding.cbStreamingSource.visibility =
-                if (!isTitleRelated && isSubscribedToSource) View.VISIBLE else View.INVISIBLE
-            
-            if (isTitleRelated && !isSubscribedToSource)
-            {
-                // Gray out the image if the user is not subscribed to the title's streaming source.
-                binding.ivLogo.colorFilter = ColorMatrixColorFilter(
-                    ColorMatrix().apply { setSaturation(0f) }
-                )
-            }
+                if (isSourceSubscribed) View.VISIBLE else View.INVISIBLE
         }
     }
-    
-    private var onItemClickListener: ((StreamingSource, Boolean) -> Unit)? = null
-    
+
+    /**
+     * Establece el listener para los clics en las plataformas disponibles a suscribir.
+     *
+     * @param listener Función Unit que proporciona la plataforma de streaming clicada y un
+     * booleano indicativo de si la plataforma ha sido suscrita o anulada
+     */
     fun setupItemOnClickListener(listener: ((StreamingSource, Boolean) -> Unit))
     {
         onItemClickListener = listener
     }
+
+
+    private var onItemClickListener: ((StreamingSource, Boolean) -> Unit)? = null
 }

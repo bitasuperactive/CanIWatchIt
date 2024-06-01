@@ -13,17 +13,23 @@ import com.example.caniwatchitapplication.ui.adapter.StreamingSourcesAdapter
 import com.example.caniwatchitapplication.ui.adapter.SubscribedStreamingSourcesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
-import com.example.caniwatchitapplication.util.Constants.Companion.MAX_STREAMING_SOURCE_LOGO_PX_SIZE
 import com.example.caniwatchitapplication.util.Resource
 import com.google.android.material.snackbar.Snackbar
 
+/**
+ * Fragmento secundario en el que usuario puede suscribirse a las plataformas de streaming
+ * que tenga contratadas para filtrar la búsqueda de los títulos.
+ *
+ * @see StreamingSourcesAdapter
+ * @see SubscribedStreamingSourcesAdapter
+ */
 class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
 {
     private var _binding: FragmentStreamingSourcesBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: AppViewModel
-    private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
     private lateinit var availableStreamingSourcesAdapter: StreamingSourcesAdapter
+    private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,28 +44,61 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel = (activity as MainActivity).appViewModel
+
         setupAdapters()
-        
-        viewModel.availableStreamingSources.observe(viewLifecycleOwner) { response ->
-            when (response)
-            {
-                is Resource.Loading ->
-                {
+        setupAvailableSourcesObserver()
+        setupSubscribedSourcesObserver()
+        setupAvailableSourceOnClickListener()
+    }
+
+    private fun setupAdapters()
+    {
+        availableStreamingSourcesAdapter = StreamingSourcesAdapter(
+            viewModel.getAllSubscribedStreamingSources(),
+            viewLifecycleOwner
+        )
+        subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
+
+        binding.rvAvailableStreamingSources.apply {
+            layoutManager = GridLayoutManager(activity, 4)
+            adapter = availableStreamingSourcesAdapter
+            setHasFixedSize(true)
+        }
+
+        binding.streamingSourcesDisplayer.rvStreamingSources.apply {
+            layoutManager = LinearLayoutManager(activity).apply {
+                orientation = LinearLayoutManager.HORIZONTAL
+            }
+            adapter = subscribedStreamingSourcesAdapter
+        }
+    }
+
+    /**
+     * Actualiza la interfaz acorde con el estado de la petición de plataformas disponibles.
+     *
+     * _Los errores simplemente se muestran en un SnackBar._
+     *
+     * @see Resource
+     */
+    private fun setupAvailableSourcesObserver() {
+        viewModel.availableStreamingSources.observe(viewLifecycleOwner) { resource ->
+
+            when (resource) {
+                is Resource.Loading -> {
                     showProgressBar()
                 }
-                
-                is Resource.Success ->
-                {
-                    response.data?.let {
+
+                is Resource.Success -> {
+                    resource.data?.let {
                         hideProgressBar()
                         availableStreamingSourcesAdapter.submitList(it)
                     }
                 }
-                
-                is Resource.Error ->
-                {
-                    response.message?.let {
+
+                is Resource.Error -> {
+                    resource.message?.let {
                         hideProgressBar()
                         Snackbar.make(
                             binding.root,
@@ -72,45 +111,30 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
                 }
             }
         }
-        
-        availableStreamingSourcesAdapter.setupItemOnClickListener { service, isChecked ->
-            
-            if (isChecked)
-            {
-                viewModel.upsertSubscribedStreamingSource(service)
-            } else
-            {
-                viewModel.deleteSubscribedStreamingSource(service)
-            }
-        }
-        
+    }
+
+    /**
+     * Actualiza el adaptador de las plataformas suscritas por el usuario.
+     */
+    private fun setupSubscribedSourcesObserver() {
         viewModel.getAllSubscribedStreamingSources().observe(viewLifecycleOwner) {
-            
+
             subscribedStreamingSourcesAdapter.submitList(it)
         }
     }
-    
-    private fun setupAdapters()
-    {
-        subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
-        availableStreamingSourcesAdapter = StreamingSourcesAdapter(
-            MAX_STREAMING_SOURCE_LOGO_PX_SIZE,
-            viewModel.getAllSubscribedStreamingSources(),
-            viewLifecycleOwner,
-            false
-        )
-        
-        binding.streamingSourcesDisplayer.rvSubscribedStreamingSources.apply {
-            layoutManager = LinearLayoutManager(activity).apply {
-                orientation = LinearLayoutManager.HORIZONTAL
+
+    /**
+     * Al hacer clic en una plataforma disponible, el usuario se suscribe a la misma y esta se
+     * almacena en la base de datos.
+     */
+    private fun setupAvailableSourceOnClickListener() {
+        availableStreamingSourcesAdapter.setupItemOnClickListener { service, isChecked ->
+
+            if (isChecked) {
+                viewModel.upsertSubscribedStreamingSource(service)
+            } else {
+                viewModel.deleteSubscribedStreamingSource(service)
             }
-            adapter = subscribedStreamingSourcesAdapter
-        }
-        
-        binding.rvAvailableStreamingSources.apply {
-            layoutManager = GridLayoutManager(activity, 4)
-            adapter = availableStreamingSourcesAdapter
-            setHasFixedSize(true)
         }
     }
     

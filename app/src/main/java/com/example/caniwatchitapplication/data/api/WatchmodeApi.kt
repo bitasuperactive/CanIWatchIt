@@ -46,6 +46,8 @@ interface WatchmodeApi
     /**
      * Recupera los identificadores correspondientes a los títulos coincidentes con un valor
      * de búsqueda.
+     *
+     * @param searchValue Nombre original de los títulos a recuperar
      */
     @GET("/v1/search/")
     suspend fun searchForTitles(
@@ -61,6 +63,8 @@ interface WatchmodeApi
 
     /**
      * Recupera los detalles de un título específico mediante su identificador único.
+     *
+     * @param titleId Identificador único del título a recuperar
      */
     @GET("/v1/title/{title_id}/details/")
     suspend fun getTitleDetails(

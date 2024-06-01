@@ -76,5 +76,11 @@ class Constants
          * Tiempo de espera para el input del usuario. Evita llamadas innecesarias a la api.
          */
         const val SEARCH_FOR_TITLES_DELAY = 500L
+
+        /**
+         * Define el número de días tras las cuales se deben actualizar las plataformas de
+         * streaming disponibles.
+         */
+        const val DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES = 1
     }
 }

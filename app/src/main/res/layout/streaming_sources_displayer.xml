@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSubscribedStreamingSources"
+        android:id="@+id/rvStreamingSources"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

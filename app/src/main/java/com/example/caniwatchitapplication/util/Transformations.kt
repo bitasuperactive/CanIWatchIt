@@ -1,10 +1,13 @@
 package com.example.caniwatchitapplication.util
 
+import com.example.caniwatchitapplication.data.database.entities.AvailableStreamingSourceEntity
+import com.example.caniwatchitapplication.data.database.entities.StreamingSourceEntity
 import com.example.caniwatchitapplication.data.database.entities.SubscribedStreamingSourceEntity
 import com.example.caniwatchitapplication.data.model.StreamingSource
 import com.example.caniwatchitapplication.data.model.TitleStreamingSource
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_REGIONS
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_TYPES
+import java.time.LocalDate
 
 /**
  * Clase que contiene métodos de transformación y filtrado de objetos.
@@ -50,7 +53,7 @@ class Transformations
          * plataforma de streaming suscrita por el usuario, para su inserción en la base de datos
          * de Room.
          */
-        fun StreamingSource.toEntity() : SubscribedStreamingSourceEntity
+        fun StreamingSource.toSubscribedEntity() : SubscribedStreamingSourceEntity
         {
             return SubscribedStreamingSourceEntity(
                 this.id,
@@ -60,13 +63,24 @@ class Transformations
         }
 
         /**
-         * Transforma el listado de entidades, correspondientes a las plataformas de streaming
-         * suscritas por el usuario, en un listado de entidades equivalente.
+         * Transforma el listado de entidades, representativas de plataformas de streaming, en sus
+         * modelos equivalentes.
          */
-        fun List<SubscribedStreamingSourceEntity>.toModelList(): List<StreamingSource>
+        fun<T> List<T>.toModelList(): List<StreamingSource> where T : StreamingSourceEntity
         {
             return this.map {
                 StreamingSource(it.id, it.name, it.logoUrl)
+            }
+        }
+
+        /**
+         * Transforma el listado de plataformas de streaming en sus entidades equivalentes
+         * para las plataformas disponibles.
+         */
+        fun List<StreamingSource>.toAvailableEntityList(): List<AvailableStreamingSourceEntity>
+        {
+            return this.map {
+                AvailableStreamingSourceEntity(it.id, it.name, it.logoUrl, LocalDate.now())
             }
         }
     }

@@ -27,13 +27,20 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * Fragmento principal en el que el usuario puede buscar los títulos deseados a visualizar.
+ *
+ * @see TitlesAdapter
+ * @see SubscribedStreamingSourcesAdapter
+ */
 class SearchFragment : Fragment(R.layout.fragment_search)
 {
     private var _binding: FragmentSearchBinding? = null
+
     private val binding get() = _binding!!
     private lateinit var viewModel: AppViewModel
-    private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
     private lateinit var titlesAdapter: TitlesAdapter
+    private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,70 +51,154 @@ class SearchFragment : Fragment(R.layout.fragment_search)
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
-    
-    @SuppressLint("ClickableViewAccessibility")
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel = (activity as MainActivity).appViewModel
-        setupAdapter()
-        
-        viewModel.getAllSubscribedStreamingSources().observe(viewLifecycleOwner) {
-            
-            subscribedStreamingSourcesAdapter.submitList(it)
+
+        setupAdapters()
+        setupSearchHintButton()
+        setupSearchEraseButton(view)
+        setupSearchListener()
+        setupTitleOnClickListener()
+        setupSubscribedSourcesObserver()
+        setupSearchedTitlesObserver()
+    }
+
+    private fun setupAdapters()
+    {
+        titlesAdapter = TitlesAdapter(viewModel, viewLifecycleOwner)
+        subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
+
+        binding.rvSearchedTitles.apply {
+            this.layoutManager = LinearLayoutManager(activity)
+            this.adapter = titlesAdapter
         }
 
-        // TODO - COPY-PASTED
+        binding.streamingSourcesDisplayer.rvStreamingSources.apply {
+            layoutManager = LinearLayoutManager(activity).apply {
+                orientation = LinearLayoutManager.HORIZONTAL
+            }
+            adapter = subscribedStreamingSourcesAdapter
+        }
+    }
+
+    /**
+     * Abre el teclado virtual al pulsar la pista de búsqueda.
+     */
+    // TODO - COPY-PASTED
+    private fun setupSearchHintButton()
+    {
         binding.tvHintToSearch.setOnClickListener {
-            
+
             binding.etTitleToSearch.requestFocus()
             // Show the keyboard.
             val imm =
                 requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etTitleToSearch, InputMethodManager.SHOW_IMPLICIT)
         }
+    }
 
-        // TODO - COPY-PASTED
-        // Set functionality of the delete image inside the EditText.
+    /**
+     * Permite borrar el texto introducido en el campo de búsqueda pulsando la cruz del límite
+     * derecho.
+     */
+    // TODO - COPY-PASTED
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupSearchEraseButton(view: View) {
         binding.etTitleToSearch.setOnTouchListener { _, event ->
             view.performClick()
 
-            if (event.action == MotionEvent.ACTION_UP)
-            {
+            if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd =
                     binding.etTitleToSearch.compoundDrawablesRelative[2] // 2 representa el índice de la imagen a la derecha
-                if (drawableEnd != null && event.rawX >= binding.etTitleToSearch.right - drawableEnd.bounds.width())
-                {
+                if (drawableEnd != null && event.rawX >= binding.etTitleToSearch.right - drawableEnd.bounds.width()) {
                     binding.etTitleToSearch.text = null
                     return@setOnTouchListener true
                 }
             }
             false
         }
-        
-        viewModel.searchedTitles.observe(viewLifecycleOwner) { resource ->
-            when (resource)
-            {
-                is Resource.Loading ->
-                {
-                    showProgressBar()
-                }
-                
-                is Resource.Success ->
-                {
-                    resource.data?.let { responseList ->
-                        hideProgressBar()
-                        // TODO - DOESN'T WORK
-                        val titlesOrderedBySource =
-                            responseList.sortedBy{ it.streamingSources.isEmpty() }
-                        titlesAdapter.submitList(titlesOrderedBySource)
-                        binding.tvNoTitlesFound.visibility =
-                            if (responseList.isEmpty()) View.VISIBLE else View.INVISIBLE
+    }
+
+    /**
+     * Al cambiar la búsqueda del título, tras un delay predefinido, la ejecuta.
+     *
+     * @see SEARCH_FOR_TITLES_DELAY
+     */
+    private fun setupSearchListener() {
+        var searchJob: Job? = null
+        binding.etTitleToSearch.addTextChangedListener {
+            searchJob?.cancel()
+            searchJob = MainScope().launch {
+                delay(SEARCH_FOR_TITLES_DELAY)
+                it?.let {
+                    val searchValue = it.toString()
+                    if (searchValue.isNotBlank()) {
+                        hideSearchHint()
+                        viewModel.searchForTitles(it.toString())
+                    } else {
+                        titlesAdapter.submitList(emptyList())
+                        binding.tvNoTitlesFound.visibility = View.INVISIBLE
+                        showSearchHint()
                     }
                 }
-                
-                is Resource.Error ->
-                {
+            }
+        }
+    }
+
+    /**
+     * Al hacer click en un título navega al fragmento correspondiente.
+     *
+     * @see TitleFragment
+     */
+    private fun setupTitleOnClickListener() {
+        titlesAdapter.setupOnClickListener {
+            val bundle = bundleOf("titleIds" to it)
+
+            findNavController().navigate(
+                R.id.action_searchFragment_to_titleFragment,
+                bundle
+            )
+        }
+    }
+
+    /**
+     * Actualiza el adaptador de las plataformas suscritas por el usuario.
+     */
+    private fun setupSubscribedSourcesObserver() {
+        viewModel.getAllSubscribedStreamingSources().observe(viewLifecycleOwner) {
+
+            subscribedStreamingSourcesAdapter.submitList(it)
+        }
+    }
+
+    /**
+     * Actualiza la interfaz acorde con el estado de la búsqueda realizada por el usuario.
+     *
+     * _Los errores simplemente se muestran en un SnackBar._
+     *
+     * @see Resource
+     */
+    private fun setupSearchedTitlesObserver() {
+        viewModel.searchedTitles.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    showProgressBar()
+                }
+
+                is Resource.Success -> {
+                    resource.data?.let { titleDetailsList ->
+                        hideProgressBar()
+                        titlesAdapter.submitList(titleDetailsList)
+                        binding.tvNoTitlesFound.visibility =
+                            if (titleDetailsList.isEmpty()) View.VISIBLE else View.INVISIBLE
+                    }
+                }
+
+                is Resource.Error -> {
                     resource.message?.let {
                         hideProgressBar()
                         Snackbar.make(
@@ -120,54 +211,6 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                     }
                 }
             }
-        }
-        
-        var searchJob: Job? = null
-        binding.etTitleToSearch.addTextChangedListener {
-            searchJob?.cancel()
-            searchJob = MainScope().launch {
-                delay(SEARCH_FOR_TITLES_DELAY)
-                it?.let {
-                    val searchValue = it.toString()
-                    if (searchValue.isNotBlank())
-                    {
-                        hideSearchHint()
-                        viewModel.searchForTitles(it.toString())
-                    } else
-                    {
-                        titlesAdapter.submitList(emptyList())
-                        binding.tvNoTitlesFound.visibility = View.INVISIBLE
-                        showSearchHint()
-                    }
-                }
-            }
-        }
-        
-        titlesAdapter.setupOnClickListener {
-            val bundle = bundleOf("titleDetails" to it)
-            
-            findNavController().navigate(
-                R.id.action_searchFragment_to_titleFragment,
-                bundle
-            )
-        }
-    }
-    
-    private fun setupAdapter()
-    {
-        subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
-        titlesAdapter = TitlesAdapter(viewModel, viewLifecycleOwner)
-        
-        binding.streamingSourcesDisplayer.rvSubscribedStreamingSources.apply {
-            layoutManager = LinearLayoutManager(activity).apply {
-                orientation = LinearLayoutManager.HORIZONTAL
-            }
-            adapter = subscribedStreamingSourcesAdapter
-        }
-        
-        binding.rvSearchedTitles.apply {
-            this.layoutManager = LinearLayoutManager(activity)
-            this.adapter = titlesAdapter
         }
     }
     

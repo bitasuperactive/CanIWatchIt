@@ -29,7 +29,7 @@
         android:label="fragment_title"
         tools:layout="@layout/fragment_title">
         <argument
-            android:name="titleDetails"
-            app:argType="com.example.caniwatchitapplication.data.model.TitleDetailsResponse" />
+            android:name="titleIds"
+            app:argType="com.example.caniwatchitapplication.data.model.TitleIds" />
     </fragment>
 </navigation>

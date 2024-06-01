@@ -15,6 +15,10 @@ import androidx.navigation.fragment.navArgs
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.databinding.FragmentTitleBinding
 
+/**
+ * Fragmento destinado a mostrar una WebView de la página de IMDb correspondiente a un título
+ * específico.
+ */
 class TitleFragment : Fragment(R.layout.fragment_title)
 {
     private var _binding: FragmentTitleBinding? = null
@@ -35,7 +39,7 @@ class TitleFragment : Fragment(R.layout.fragment_title)
     {
         super.onViewCreated(view, savedInstanceState)
         
-        val imdbId = args.titleDetails.imdbId
+        val imdbId = args.titleIds.imdbId
         val urlToImdb = "https://www.imdb.com/title/$imdbId"
         
         binding.webView.apply {

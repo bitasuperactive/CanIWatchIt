@@ -16,6 +16,12 @@ import com.google.android.material.snackbar.Snackbar
 class MainActivity : AppCompatActivity()
 {
     private lateinit var binding: ActivityMainBinding
+
+    /**
+     * Snackbar indicativo de que se debe seleccionar al menos una plataforma de streaming.
+     */
+    private lateinit var snackbarHint: Snackbar
+
     lateinit var appViewModel: AppViewModel
     
     override fun onCreate(savedInstanceState: Bundle?)
@@ -23,8 +29,9 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
-        val repository = AppRepository(AppDatabase(this))
+
+        val database = AppDatabase(this)
+        val repository = AppRepository(database)
         val appViewModelProvider = AppViewModelProvider(repository)
         
         appViewModel = ViewModelProvider(this, appViewModelProvider)[AppViewModel::class.java]
@@ -32,28 +39,37 @@ class MainActivity : AppCompatActivity()
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.appNavHostFragment) as NavHostFragment
         binding.bottomNavigationView.setupWithNavController(navHostFragment.navController)
-        
-        // Block the navigation until at least once service is selected.
-        appViewModel.getAllSubscribedStreamingSources().observe(this) { services ->
-            
-            if (services.isEmpty())
-            {
-                // Navigate to the services fragment using the navigation menu.
+
+        snackbarHint = Snackbar.make(
+            binding.root,
+            getString(R.string.select_at_least_one_streaming_source),
+            Snackbar.LENGTH_INDEFINITE
+        ).apply {
+            anchorView = binding.bottomNavigationView
+        }
+
+        setupNavigationBlocker()
+    }
+
+    /**
+     * Bloquea la nevegación hasta que no se seleccione al menos una plataforma de streaming a
+     * filtrar.
+     */
+    private fun setupNavigationBlocker()
+    {
+        appViewModel.getAllSubscribedStreamingSources().observe(this) { subscribedSources ->
+
+            if (subscribedSources.isEmpty()) {
+                // Navigate to the streaming sources fragment using the navigation menu
                 binding.bottomNavigationView.selectedItemId = R.id.streamingSourcesFragment
-                // Disable search fragment navigation.
+                // Disable navigation to search fragment
                 binding.bottomNavigationView.menu.getItem(0).isEnabled = false
-                
-                Snackbar.make(
-                    binding.root,
-                    getString(R.string.select_at_least_one_streaming_source),
-                    Snackbar.LENGTH_LONG
-                ).apply {
-                    anchorView = binding.bottomNavigationView
-                }.show()
-            } else
-            {
-                // Enable search fragment navigation.
+                snackbarHint.show()
+
+            } else {
+                // Enable navigation to search fragment
                 binding.bottomNavigationView.menu.getItem(0).isEnabled = true
+                snackbarHint.dismiss()
             }
         }
     }

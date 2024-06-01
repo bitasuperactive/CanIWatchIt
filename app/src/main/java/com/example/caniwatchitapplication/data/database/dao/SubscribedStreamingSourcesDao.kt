@@ -3,19 +3,24 @@ package com.example.caniwatchitapplication.data.database.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.example.caniwatchitapplication.data.database.entities.SubscribedStreamingSourceEntity
 
+/**
+ * Room Data Access Object de las plataformas de streaming suscritas por el usuario.
+ */
 @Dao
 interface SubscribedStreamingSourcesDao
 {
     /**
-     * Inserta o reemplaza una plataforma de streaming suscrita.
-     * @return Identificador único del objeto insertado o reemplazado.
+     * Inserta o actualiza una plataforma de streaming suscrita.
+     *
+     * @param streamingSource Plataforma de streaming a insertar o actualizar
+     *
+     * @return Identificador único de Room del objeto insertado o reemplazado.
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsert(streamingSource: SubscribedStreamingSourceEntity): Long
 
     /**
@@ -26,6 +31,8 @@ interface SubscribedStreamingSourcesDao
 
     /**
      * Elimina una plataforma de streaming suscrita.
+     *
+     * @param streamingSource Plataforma de streaming a eliminar
      */
     @Delete
     suspend fun delete(streamingSource: SubscribedStreamingSourceEntity)
