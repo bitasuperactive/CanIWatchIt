@@ -21,7 +21,7 @@ interface WatchmodeApi
 {
     /**
      * Recupera el número de peticiones realizadas y las contratadas por mes para una clave
-     * específica.
+     * específica. No consume peticiones.
      */
     @GET("/v1/status/")
     suspend fun getQuota(
