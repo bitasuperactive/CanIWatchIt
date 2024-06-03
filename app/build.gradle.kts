@@ -13,12 +13,12 @@ android {
         applicationId = "com.example.caniwatchitapplication"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 70
+        versionName = "0.70-beta"
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -28,16 +28,51 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
+}
+
+/**
+ * Esta tarea transforma el BuildConfig.java del proyecto en un JSON. Se ejecuta pre-build.
+ */
+task("generateBuildConfigJson") {
+    val outputDir =
+        "${rootProject.projectDir}/app/release/"
+    val outputFile = File(outputDir, "BuildConfig.json")
+
+    doLast {
+        // Crear el directorio si no existe
+        outputFile.parentFile.mkdirs()
+
+        // Obtener los valores de BuildConfig y añadir el enlace de descarga de la versión
+        val buildConfigValues = mapOf(
+            "applicationId" to project.android.defaultConfig.applicationId,
+            "versionCode" to project.android.defaultConfig.versionCode,
+            "versionName" to project.android.defaultConfig.versionName,
+            "buildType" to project.android.buildTypes.getByName("release").name,
+            "downloadUrl" to project.properties["appDownloadUrl"]
+        )
+
+        // Transformar Map a Json
+        outputFile.writeText(groovy.json.JsonOutput.toJson(buildConfigValues))
+    }
+}
+
+// Hacer que la tarea compile antes del build
+tasks.named("preBuild").configure {
+    dependsOn("generateBuildConfigJson")
 }
 
 dependencies {

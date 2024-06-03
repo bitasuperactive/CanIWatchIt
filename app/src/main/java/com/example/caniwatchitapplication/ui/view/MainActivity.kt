@@ -11,7 +11,10 @@ import com.example.caniwatchitapplication.data.repository.AppRepository
 import com.example.caniwatchitapplication.databinding.ActivityMainBinding
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModelProvider
+import com.example.caniwatchitapplication.data.UpdateManager
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity()
 {
@@ -49,6 +52,8 @@ class MainActivity : AppCompatActivity()
         }
 
         setupNavigationBlocker()
+
+        MainScope().launch { UpdateManager(this@MainActivity).checkForUpdates() }
     }
 
     /**

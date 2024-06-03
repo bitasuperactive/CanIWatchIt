@@ -12,7 +12,7 @@ class Constants
         /**
          * Enlace base a la api.
          */
-        const val API_BASE_URL = "https://api.watchmode.com"
+        const val WATCHMODE_API_BASE_URL = "https://api.watchmode.com"
 
         /**
          * Clave de acceso gratuito a la api. Limitada a 1000 llamadas mensuales.
@@ -44,7 +44,7 @@ class Constants
         /**
          * Regiones a filtrar al buscar títulos.
          *
-         * _Each additional region will cost 1 API credit._
+         * _Cada región adicional consumirá 1 credito más de la api._
          *
          * Regiones disponibles: [API Docs](https://api.watchmode.com/docs/#list-titles)
          */

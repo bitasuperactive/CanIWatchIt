@@ -86,7 +86,7 @@ class AppRepository(
         }
 
         // Fetch from api
-        val response = RetrofitProvider.api.getAllStreamingSources()
+        val response = RetrofitProvider.watchmodeApi.getAllStreamingSources()
 
         if (response.isSuccessful) {
 
@@ -112,7 +112,7 @@ class AppRepository(
      */
     suspend fun searchForTitles(searchValue: String): Resource<List<TitleDetailsResponse>>
     {
-        val response = RetrofitProvider.api.searchForTitles(searchValue)
+        val response = RetrofitProvider.watchmodeApi.searchForTitles(searchValue)
 
         if (response.isSuccessful) {
 
@@ -151,7 +151,7 @@ class AppRepository(
      */
     private suspend fun getApiQuota(): Resource<QuotaResponse>
     {
-        val response = RetrofitProvider.api.getQuota()
+        val response = RetrofitProvider.watchmodeApi.getQuota()
 
         if (response.isSuccessful) {
 
@@ -196,7 +196,7 @@ class AppRepository(
         // Calls limited by the following constant.
         for (title in titleIds.take(Constants.MAX_TITLE_DETAILS_REQUESTS))
         {
-            val response = RetrofitProvider.api.getTitleDetails(title.id.toString())
+            val response = RetrofitProvider.watchmodeApi.getTitleDetails(title.id.toString())
             val titleDetails = response.body()
 
             if (response.isSuccessful && titleDetails != null) {
