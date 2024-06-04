@@ -105,9 +105,9 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- USAGE EXAMPLES -->
 ## Uso
 
-* Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming que tienes contratadas; podrás cambiar tu elección desde la pestaña esa misma pestaña llamada "Plataformas".
-* Desde la pestaña principal "Buscar" que, a partir de ahora te aparecerá directamente, podrás buscar los títulos que quieras ver. Si el contenido resultante está disponible en cualquier de tus plataformas, el logo de esta aparecerá a color, de lo contrario estará teñido de gris.
-* Al pinchar en cualquier título de los que busques, se abrirá la web de IMDb correspondiente. Esta vista tiene funcionalidades limitadas y no podrás reproducir el trailer, entre otras limitaciones.
+1. Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming que tienes contratadas; podrás cambiar tu elección desde la pestaña esa misma pestaña llamada "Plataformas".
+2. Desde la pestaña principal "Buscar" que, a partir de ahora te aparecerá directamente, podrás buscar los títulos que quieras ver. Si el contenido resultante está disponible en cualquier de tus plataformas, el logo de esta aparecerá a color, de lo contrario estará teñido de gris.
+3. Al pinchar en cualquier título de los que busques, se abrirá la web de IMDb correspondiente. Esta vista tiene funcionalidades limitadas y no podrás reproducir el trailer, entre otras limitaciones.
 
 <p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
 
