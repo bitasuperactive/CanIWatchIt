@@ -1,3 +1,22 @@
+<!-- https://shields.io/badges/ -->
+[version]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fbitasuperactive%2FCanIWatchIt%2Freleases%2Flatest&query=%24.name&style=for-the-badge&label=Versi%C3%B3n
+[download_count]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fbitasuperactive%2FCanIWatchIt%2Freleases%2Flatest&query=%24.assets.0.download_count&style=for-the-badge&label=Descargas
+[sdk_version]: https://img.shields.io/badge/Android%20SDK-34-blue?style=for-the-badge
+
+
+<!-- BADGES -->
+<h1 align="center">
+
+  ![GitHub Release][version]
+  &ensp;
+  ![GitHub Downloads][download_count]
+  &ensp;
+  ![Android SDK][sdk_version]
+
+</h1>
+
+
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -10,11 +29,12 @@
   <p align="center">
     Proyecto escolar (CFGS) para desarrollo de aplicaciones móviles.
     <br />
-    View Demo
+    <br />
+    Ver Demo
     ·
-    <a href="https://github.com/bitasuperactive/CanIWatchIt/issues/new?labels=bug&template=bug-report.md">Report Bug</a>
+    <a href="https://github.com/bitasuperactive/CanIWatchIt/issues/new?labels=bug&template=bug-report.md">Reportar Bug</a>
     ·
-    <a href="https://github.com/bitasuperactive/CanIWatchIt/issues/new?labels=mejora&template=feature-request.md">Request Feature</a>
+    <a href="https://github.com/bitasuperactive/CanIWatchIt/issues/new?labels=mejora&template=feature-request.md">Sugerir Característica</a>
   </p>
 </div>
 
@@ -32,12 +52,13 @@
       </ul>
     </li>
     <li><a href="#uso">Uso</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contribuir">Contribuir</a></li>
-    <li><a href="#licencia">Licencia</a></li>
-    <li><a href="#reconocimientos">Reconocimientos</a></li>
+    <li><a href="#-objetivos">Objetivos</a></li>
+    <li><a href="#-contribuir">Contribuir</a></li>
+    <li><a href="#-licencia">Licencia</a></li>
+    <li><a href="#-reconocimientos">Reconocimientos</a></li>
   </ol>
 </details>
+<br />
 
 
 
@@ -79,13 +100,11 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
  - No se espera algo profesional, o que realmente sea útil y monetizable, pero sí algo que ponga en práctica lo visto en clase, y cualquier cosa que queráis añadir.
 </details>
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
 
 
 ### Herramientas utilizadas
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
 * ViewBinding
 * ConstraintLayout
@@ -98,25 +117,27 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * Navigation menu.
 * Otros Plugins: Json to Kotlin data class.
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
 
 
 <!-- USAGE EXAMPLES -->
 ## Uso
 
-1. Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming que tienes contratadas; podrás cambiar tu elección desde la pestaña esa misma pestaña llamada "Plataformas".
-2. Desde la pestaña principal "Buscar" que, a partir de ahora te aparecerá directamente, podrás buscar los títulos que quieras ver. Si el contenido resultante está disponible en cualquier de tus plataformas, el logo de esta aparecerá a color, de lo contrario estará teñido de gris.
-3. Al pinchar en cualquier título de los que busques, se abrirá la web de IMDb correspondiente. Esta vista tiene funcionalidades limitadas y no podrás reproducir el trailer, entre otras limitaciones.
+  1️⃣ Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming que tienes contratadas; podrás cambiar tu elección desde la pestaña esa misma pestaña llamada "Plataformas".
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
+  2️⃣ Desde la pestaña principal "Buscar" que, a partir de ahora te aparecerá directamente, podrás buscar los títulos que quieras ver. Si el contenido resultante está disponible en cualquier de tus plataformas, el logo de esta aparecerá a color, de lo contrario estará teñido de gris.
+
+  3️⃣ Al pinchar en cualquier título de los que busques, se abrirá la web de IMDb correspondiente. Esta vista tiene funcionalidades limitadas y no podrás reproducir el trailer, entre otras limitaciones.
+
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
 
 
 <!-- ROADMAP -->
-## Roadmap
+## 🚀 Objetivos
 
-### Roadmap principal:
+### Camino principal:
 - [x] Cumplir los requisitos para el desarrollo
 - [ ] Implementar actualizaciones automáticas a través de este repositorio
 	- [x] Recuperar la última versión disponible
@@ -128,14 +149,14 @@ This section should list any major frameworks/libraries used to bootstrap your p
 - [ ] Cambiar la api a la de JustWatch
 - [ ] Implementar cámbio de región dinámico
 
-Vea los [open issues](https://github.com/bitasuperactive/CanIWatchIt/issues) para una lista completa de las características propuestas y bugs conocidos.
+Vea [open issues](https://github.com/bitasuperactive/CanIWatchIt/issues) para una lista completa de las características propuestas y bugs conocidos.
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
 
 
 <!-- CONTRIBUTING -->
-## Contribuir
+## 📌 Contribuir
 
 Las contribuciones son lo que hace que la comunidad de código abierto sea un lugar increíble para aprender, inspirarse y crear. Cualquier contribución que hagas será **muy apreciada**.
 
@@ -147,28 +168,23 @@ Si tienes una sugerencia que pueda mejorar este proyecto, por favor haz un fork 
 4.  Haz push a la rama (`git push origin feature/AmazingFeature`)
 5.  Abre un pull request
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
 
 
 <!-- LICENSE -->
-## Licencia
+## 📜 Licencia
 
-Distribuido bajo la licencia MIT. Vea `LICENSE.txt` para más información.
+Distribuido bajo la licencia MIT. Vea [LICENSE](/LICENSE) para más información.
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
 
 
 <!-- ACKNOWLEDGMENTS -->
-## Reconocimientos
+## 🤝 Reconocimientos
 
 * [MVVM News App - Philipp Lackner](https://www.youtube.com/watch?v=asuOWE5KuFM&list=PLQkwcJG4YTCRF8XiCRESq1IFFW8COlxYJ)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 
-<p align="right">(<a href="#readme-top">volver al inicio</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
