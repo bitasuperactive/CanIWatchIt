@@ -10,9 +10,9 @@ import java.io.Serializable
  * @param imdbId Identificador único en IMDb
  */
 data class TitleIds(
-    val id: Int,
+    val id: Int?,
     @SerializedName("imdb_id")
-    val imdbId: String,
+    val imdbId: String?,
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,7 +27,7 @@ data class TitleIds(
     }
 
     override fun hashCode(): Int {
-        var result = id
+        var result = id ?: 0
         result = 31 * result + imdbId.hashCode()
         return result
     }

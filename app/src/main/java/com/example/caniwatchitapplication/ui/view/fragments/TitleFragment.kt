@@ -5,11 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.example.caniwatchitapplication.R
@@ -43,6 +40,7 @@ class TitleFragment : Fragment(R.layout.fragment_title)
         val urlToImdb = "https://www.imdb.com/title/$imdbId"
         
         binding.webView.apply {
+            settings.javaScriptEnabled = true
             webViewClient = TitleWebViewClient()
             loadUrl(urlToImdb)
         }
@@ -60,27 +58,6 @@ class TitleFragment : Fragment(R.layout.fragment_title)
         {
             super.onPageCommitVisible(view, url)
             hideProgressBar()
-        }
-        
-        override fun onPageFinished(view: WebView?, url: String?)
-        {
-            super.onPageFinished(view, url)
-            hideProgressBar()
-        }
-        
-        override fun onReceivedError(
-            view: WebView?,
-            request: WebResourceRequest?,
-            error: WebResourceError?
-        )
-        {
-            super.onReceivedError(view, request, error)
-            
-            Toast.makeText(
-                activity,
-                "Se ha producido un error: ${error?.description}",
-                Toast.LENGTH_LONG
-            ).show()
         }
     }
     

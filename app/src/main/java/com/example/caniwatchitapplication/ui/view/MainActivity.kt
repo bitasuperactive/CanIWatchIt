@@ -9,9 +9,9 @@ import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.data.database.AppDatabase
 import com.example.caniwatchitapplication.data.repository.AppRepository
 import com.example.caniwatchitapplication.databinding.ActivityMainBinding
+import com.example.caniwatchitapplication.ui.view.dialogs.UpdateDialog
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModelProvider
-import com.example.caniwatchitapplication.data.UpdateManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity()
 
         setupNavigationBlocker()
 
-        MainScope().launch { UpdateManager(this@MainActivity).checkForUpdates() }
+        MainScope().launch { UpdateDialog(this@MainActivity).show() }
     }
 
     /**
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity()
      */
     private fun setupNavigationBlocker()
     {
-        appViewModel.getAllSubscribedStreamingSources().observe(this) { subscribedSources ->
+        appViewModel.subscribedStreamingSources.observe(this) { subscribedSources ->
 
             if (subscribedSources.isEmpty()) {
                 // Navigate to the streaming sources fragment using the navigation menu

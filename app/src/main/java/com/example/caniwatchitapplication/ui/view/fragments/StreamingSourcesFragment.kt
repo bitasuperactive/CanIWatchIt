@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.caniwatchitapplication.BuildConfig
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.databinding.FragmentStreamingSourcesBinding
 import com.example.caniwatchitapplication.ui.adapter.StreamingSourcesAdapter
@@ -44,6 +45,8 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvBuildVersionName.text =
+            getString(R.string.app_version_name, BuildConfig.VERSION_NAME)
 
         viewModel = (activity as MainActivity).appViewModel
 
@@ -56,7 +59,7 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
     private fun setupAdapters()
     {
         availableStreamingSourcesAdapter = StreamingSourcesAdapter(
-            viewModel.getAllSubscribedStreamingSources(),
+            viewModel.subscribedStreamingSources,
             viewLifecycleOwner
         )
         subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
@@ -102,7 +105,7 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
                         hideProgressBar()
                         Snackbar.make(
                             binding.root,
-                            "Se ha producido un error: $it",
+                            getString(R.string.unknown_error, it),
                             Snackbar.LENGTH_LONG
                         ).apply {
                             setAnchorView(R.id.bottomNavigationView)
@@ -117,7 +120,7 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
      * Actualiza el adaptador de las plataformas suscritas por el usuario.
      */
     private fun setupSubscribedSourcesObserver() {
-        viewModel.getAllSubscribedStreamingSources().observe(viewLifecycleOwner) {
+        viewModel.subscribedStreamingSources.observe(viewLifecycleOwner) {
 
             subscribedStreamingSourcesAdapter.submitList(it)
         }
@@ -128,7 +131,7 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
      * almacena en la base de datos.
      */
     private fun setupAvailableSourceOnClickListener() {
-        availableStreamingSourcesAdapter.setupItemOnClickListener { service, isChecked ->
+        availableStreamingSourcesAdapter.setupOnItemClickListener { service, isChecked ->
 
             if (isChecked) {
                 viewModel.upsertSubscribedStreamingSource(service)

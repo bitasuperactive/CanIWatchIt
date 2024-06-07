@@ -1,6 +1,7 @@
 package com.example.caniwatchitapplication.data.api
 
-import com.example.caniwatchitapplication.util.Constants
+import com.example.caniwatchitapplication.util.Constants.Companion.APP_REPOSITORY_BASE_URL
+import com.example.caniwatchitapplication.util.Constants.Companion.WATCHMODE_API_BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -14,8 +15,12 @@ class RetrofitProvider
 {
     companion object
     {
+        val githubApi: GithubApi by lazy {
+            build(APP_REPOSITORY_BASE_URL).create(GithubApi::class.java)
+        }
+
         val watchmodeApi: WatchmodeApi by lazy {
-            build(Constants.WATCHMODE_API_BASE_URL).create(WatchmodeApi::class.java)
+            build(WATCHMODE_API_BASE_URL).create(WatchmodeApi::class.java)
         }
 
         /**

@@ -1,5 +1,8 @@
 package com.example.caniwatchitapplication.ui.adapter
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +17,9 @@ import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
 import com.example.caniwatchitapplication.data.model.TitleIds
 import com.example.caniwatchitapplication.databinding.ItemTitlePreviewBinding
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
-import com.example.caniwatchitapplication.util.Transformations.Companion.filterByTitleSources
+import com.example.caniwatchitapplication.util.Transformations.Companion.recreate
+import com.google.android.material.snackbar.Snackbar
+
 /**
  * Adaptador para los detalles de los títulos resultantes de una búsqueda. Además,
  * define el adaptador correspondiente a las plataformas en que el título se encuentra disponible.
@@ -23,12 +28,14 @@ import com.example.caniwatchitapplication.util.Transformations.Companion.filterB
  *
  *      - Items clicables.
  *
+ * @param owner Vista propietaria del RecyclerView que implementa el adaptador
  * @param viewModel La VistaModelo de la aplicación
  * @param lifecycleOwner Propietario del ciclo de vida del adaptador
  *
  * @see com.example.caniwatchitapplication.ui.adapter.TitleStreamingSourcesAdapter
  */
 class TitlesAdapter(
+    private val owner: View,
     private val viewModel: AppViewModel,
     private val lifecycleOwner: LifecycleOwner
 ) : ListAdapter<TitleDetailsResponse, TitlesAdapter.TitlesViewHolder>(
@@ -69,7 +76,7 @@ class TitlesAdapter(
         holder.itemView.apply {
 
             val posterUrl = titleDetails.posterUrl
-            if (posterUrl.isNotEmpty()) {
+            if (!posterUrl.isNullOrEmpty()) {
                 Glide.with(this).load(posterUrl).into(binding.ivTitleImage)
             }
             
@@ -86,7 +93,7 @@ class TitlesAdapter(
         }
         
         val titleStreamingSourcesAdapter = TitleStreamingSourcesAdapter(
-            viewModel.getAllSubscribedStreamingSources(),
+            viewModel.subscribedStreamingSources,
             lifecycleOwner
         )
 
@@ -103,13 +110,17 @@ class TitlesAdapter(
         viewModel.availableStreamingSources.observe(lifecycleOwner) { resource ->
 
             resource.data?.let { allAvailableSources ->
-                val titleAvailableSources =
-                    allAvailableSources.filterByTitleSources(titleDetails.streamingSources)
+                val titleSources =
+                    titleDetails.streamingSources?.recreate(allAvailableSources)
                 
                 binding.tvTitleHasNoStreamingSources.visibility =
-                    if (titleAvailableSources.isEmpty()) View.VISIBLE else View.INVISIBLE
+                    if (titleSources.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
 
-                titleStreamingSourcesAdapter.submitList(titleAvailableSources)
+                titleStreamingSourcesAdapter.setupOnItemClickListener { titleUrl ->
+                    openTitleUrl(titleUrl)
+                }
+
+                titleStreamingSourcesAdapter.submitList(titleSources)
             }
         }
     }
@@ -119,10 +130,38 @@ class TitlesAdapter(
      *
      * @param listener Función Unit que proporciona los identificadores únicos del título clicado
      */
-    fun setupOnClickListener(listener: ((TitleIds) -> Unit))
+    fun setupOnItemClickListener(listener: ((TitleIds) -> Unit))
     {
         onItemClickListener = listener
     }
 
     private var onItemClickListener: ((TitleIds) -> Unit)? = null
+
+    /**
+     * Abre el enlace a un título específico en la plataforma de streaming correspondiente.
+     * Si la aplicación de la plataforma está instalada en el sistema esta abrirá el enlace, de
+     * lo contrario se abrirá en el navegador por defecto.
+     *
+     * @param titleUrl Enlace a un título específico
+     */
+    private fun openTitleUrl(titleUrl: String)
+    {
+        val context = owner.context
+        val uri = Uri.parse(titleUrl)
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        try {
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Snackbar.make(
+                owner,
+                "No ha sido posible abrir el enlace: $titleUrl",
+                Snackbar.LENGTH_LONG
+            ).apply {
+                anchorView = owner.rootView.findViewById(R.id.bottomNavigationView)
+            }.show()
+        }
+    }
 }

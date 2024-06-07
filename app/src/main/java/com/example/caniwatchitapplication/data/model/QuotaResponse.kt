@@ -7,6 +7,6 @@ package com.example.caniwatchitapplication.data.model
  * @property quotaUsed Número de consultas consumidas para el mes en curso
  */
 data class QuotaResponse(
-    val quota: Int,
-    val quotaUsed: Int
+    val quota: Int?,
+    val quotaUsed: Int?
 )

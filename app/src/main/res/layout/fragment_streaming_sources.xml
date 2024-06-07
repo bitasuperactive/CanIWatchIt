@@ -7,6 +7,18 @@
     android:background="@color/md_theme_secondaryContainer"
     tools:context=".ui.view.fragments.StreamingSourcesFragment">
 
+    <TextView
+        android:id="@+id/tvBuildVersionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/lLayoutSubscribedStreamingSources"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="v0.01-alpha" />
+
     <LinearLayout
         android:id="@+id/lLayoutSubscribedStreamingSources"
         android:layout_width="match_parent"

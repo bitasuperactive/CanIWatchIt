@@ -5,6 +5,11 @@ class Constants
     companion object
     {
         /**
+         * Enlace al repositorio de la aplicación en GitHub.
+         */
+        const val APP_REPOSITORY_BASE_URL = "https://github.com/bitasuperactive/CanIWatchIt/"
+
+        /**
          * Nombre de la base de datos de Room para esta aplicación.
          */
         const val APP_DATABASE_NAME = "caniwatchit_db.db"
@@ -17,7 +22,7 @@ class Constants
         /**
          * Clave de acceso gratuito a la api. Limitada a 1000 llamadas mensuales.
          */
-        const val API_KEY = "DTTAVpb3QzVjtZdADZJ1YiVo3MzIzHWWJfWFukvo"
+        const val API_KEY = "kX2bi0YR5leUYSo8FJXctbAfILTuk5wNDMkBiZrB"
 
         /**
          * Límite de la cantidad de títulos detallados a recuperar de la api.
@@ -63,7 +68,7 @@ class Constants
          * _Se utiliza en el "displayer" para mostrar al usuario las plataformas a las que está
          * suscrito o aquellas para las que un título se encuentra disponible._
          */
-        const val MIN_STREAMING_SOURCE_LOGO_PX_SIZE = 100
+        const val MIN_STREAMING_SOURCE_LOGO_PX_SIZE = 130
 
         /**
          * Tamaño máximo que pueden tomar los logos de las plataformas de streaming.

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.caniwatchitapplication.data.api.RetrofitProvider
 import com.example.caniwatchitapplication.data.database.AppDatabase
+import com.example.caniwatchitapplication.data.model.AppVersionInfo
 import com.example.caniwatchitapplication.data.model.QuotaResponse
 import com.example.caniwatchitapplication.data.model.StreamingSource
 import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
@@ -19,9 +20,9 @@ import java.time.LocalDate
 import java.time.Period
 
 /**
- * Recupera los datos requeridos por el ViewModel, gestiona las respuestas del endpoint y realiza
- * las transformaciones necesarias actuando como puente entre la base de datos, la api y el
- * ViewModel.
+ * Recupera los datos requeridos por el ViewModel, gestiona las respuestas de los endpoints y
+ * realiza las transformaciones necesarias actuando como puente entre la base de datos, las apis y
+ * el ViewModel.
  *
  * @param database Base de datos Room de la aplicación
  *
@@ -32,6 +33,22 @@ class AppRepository(
 )
 {
     private val tag = "AppRepository"
+
+    /**
+     * @see com.example.caniwatchitapplication.data.api.GithubApi.getLatestRelease
+     */
+    suspend fun fetchAppLatestRelease(): Resource<AppVersionInfo>
+    {
+        val response = RetrofitProvider.githubApi.getLatestRelease()
+
+        if (response.isSuccessful) {
+            response.body()?.let {
+                return Resource.Success(it)
+            }
+        }
+
+        return Resource.Error(response.message(), response.body())
+    }
 
     /**
      * Imprime en consola el número de peticiones realizadas a la api y el número de peticiones

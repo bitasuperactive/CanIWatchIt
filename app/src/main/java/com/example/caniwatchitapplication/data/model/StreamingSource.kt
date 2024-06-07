@@ -10,8 +10,8 @@ import com.google.gson.annotations.SerializedName
  * @param logoUrl Url del logo (100x100 píxeles)
  */
 data class StreamingSource(
-    val id: Int,
-    val name: String,
+    val id: Int?,
+    val name: String?,
     @SerializedName("logo_100px")
-    val logoUrl: String,
+    val logoUrl: String?,
 )

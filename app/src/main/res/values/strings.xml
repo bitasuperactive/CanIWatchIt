@@ -1,14 +1,26 @@
 <resources>
-    <string name="app_name">Can I Watch It Application</string>
+    <string name="app_name">Can I Watch It</string>
     <string name="user_score">%1.1f/10</string>
     <string name="plot_overview_example">When Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of only two years left to live. He becomes filled with a sense of fearlessness and an unrelenting desire to secure his family\'s financial future at any cost as he enters the dangerous world of drugs and crime.</string>
     <string name="streaming_source_image_content_description">Plataforma de suscripción disponible en España.</string>
     <string name="explicit_search_hint">Comienza a buscar ⬆️</string>
     <string name="title_has_no_streaming_sources">No disponible en ninguna plataforma</string>
     <string name="select_at_least_one_streaming_source">Debes seleccionar al menos una plataforma de streaming</string>
-    <string name="search_hint">Título original de la producción</string>
+    <string name="search_hint">Título americano de la producción</string>
     <string name="no_titles_found">No se ha encontrado ningún título</string>
     <string name="search">Buscar</string>
     <string name="streaming_platforms">Plataformas</string>
     <string name="in_line_separator">|</string>
+    <string name="app_update_status">Recuperando información del repositorio…</string>
+    <string name="cancel">Cancelar</string>
+    <string name="update">Actualizar</string>
+    <string name="dialog_app_update_title">Gestor de actualizaciones</string>
+    <string name="dismiss">Omitir</string>
+    <string name="new_version_available">Nueva versión disponible: %1$s</string>
+    <string name="update_status_error">%1$s Puedes cerrar este diálogo pulsando fuera de él.</string>
+    <string name="update_status_exception">Error al comprobar actualizaciones. Inténtalo más tarde.\nPuedes cerrar este diálogo pulsando fuera de él.</string>
+    <string name="update_status_downloading">Descargando actualización…</string>
+    <string name="update_status_installing">Abriendo instalador…</string>
+    <string name="unknown_error">Se ha producido un error: %1$s</string>
+    <string name="app_version_name">v%1$s</string>
 </resources>

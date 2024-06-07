@@ -1,7 +1,7 @@
 <!-- https://shields.io/badges/ -->
 [version]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fbitasuperactive%2FCanIWatchIt%2Freleases%2Flatest&query=%24.name&style=for-the-badge&label=Versi%C3%B3n
 [download_count]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fbitasuperactive%2FCanIWatchIt%2Freleases%2Flatest&query=%24.assets.0.download_count&style=for-the-badge&label=Descargas
-[sdk_version]: https://img.shields.io/badge/Android%20SDK-34-blue?style=for-the-badge
+[min_sdk_version]: https://img.shields.io/badge/Min%20Android%20SDK-26-blue?style=for-the-badge
 
 
 <!-- BADGES -->
@@ -11,7 +11,7 @@
   &ensp;
   ![GitHub Downloads][download_count]
   &ensp;
-  ![Android SDK][sdk_version]
+  ![Min Android SDK][min_sdk_version]
 
 </h1>
 
@@ -27,7 +27,7 @@
   <h3 align="center">Can-I-Watch-It</h3>
 
   <p align="center">
-    Proyecto escolar (CFGS) para desarrollo de aplicaciones móviles.
+    Proyecto escolar (CFGS) de desarrollo de aplicaciones móviles.
     <br />
     <br />
     Ver Demo
@@ -42,7 +42,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Tabla de contenidos</summary>
+  <summary>Índice</summary>
   <ol>
     <li>
       <a href="#sobre-el-proyecto">Sobre el proyecto</a>
@@ -64,17 +64,24 @@
 
 <!-- ABOUT THE PROJECT -->
 ## Sobre el proyecto
-Busca cualquier película o serie para ver si está disponible en tus plataformas contratadas. Limitado a España.
+Busca cualquier película o serie para ver si está disponible en tus plataformas contratadas.
+
+> [!IMPORTANT]
+> Resultados limitados a la región de España.
+
 <br />
 <br />
+
 <div align="center">
 	<a href="https://github.com/bitasuperactive/CanIWatchIt">
-		<img src="doc/images/app_showcase/plataformas.png" alt="Logo" width="270" height"555">
-		<img src="doc/images/app_showcase/buscar.png" alt="Logo" width="270" height"555">
+		<img src="doc/images/app_showcase/plataformas.png" alt="Logo" width="270" height="555">
+		<img src="doc/images/app_showcase/buscar.png" alt="Logo" width="270" height="555">
 	</a>
 </div>
+
 <br />
 <br />
+
 <details>
 	<summary><h3>Requisitos de desarrollo</h3></summary>
 
@@ -124,11 +131,24 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
 <!-- USAGE EXAMPLES -->
 ## Uso
 
-  1️⃣ Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming que tienes contratadas; podrás cambiar tu elección desde la pestaña esa misma pestaña llamada "Plataformas".
+1️⃣ Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming deseadas a filtrar; podrás cambiar tu elección desde esa misma pestaña de "Plataformas".
 
-  2️⃣ Desde la pestaña principal "Buscar" que, a partir de ahora te aparecerá directamente, podrás buscar los títulos que quieras ver. Si el contenido resultante está disponible en cualquier de tus plataformas, el logo de esta aparecerá a color, de lo contrario estará teñido de gris.
+<br />
 
-  3️⃣ Al pinchar en cualquier título de los que busques, se abrirá la web de IMDb correspondiente. Esta vista tiene funcionalidades limitadas y no podrás reproducir el trailer, entre otras limitaciones.
+2️⃣ Desde la pestaña principal "Buscar", que a partir de ahora te aparecerá directamente, podrás buscar los títulos que quieras ver. Si el contenido resultante está disponible en cualquiera de tus plataformas, el logo de esta aparecerá a color, de lo contrario estará teñido de gris.
+
+> [!IMPORTANT]
+> Recuerda utilizar el nombre original o americano de la producción en vez del título en español.
+
+<br />
+
+3️⃣ Interactúa con los títulos resultantes:
+
+  * Pincha en la caratula para abrir la web de IMDb con toda la información del título, trailers disponibles y contenidos similares.
+  * Pincha en cualquiera de las plataformas disponibles para abrir la aplicación correspondiente si la tienes instalada o, tu navegador por defecto, con la página del título.
+
+> [!WARNING]
+> JavaScript está habilitado en la vista web de IMDb.
 
 <p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
@@ -139,17 +159,17 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
 
 ### Camino principal:
 - [x] Cumplir los requisitos para el desarrollo
-- [ ] Implementar actualizaciones automáticas a través de este repositorio
+- [x] Implementar actualizaciones automáticas a través de este repositorio
 	- [x] Recuperar la última versión disponible
-	- [ ] Gestionar la instalación automáticamente
-	- [ ] Diseñar una interfaz básica para la carga del proceso
-- [ ] Dar funcionalidad a los iconos de las plataformas para que abran la aplicación correspondiente con el título disponible
+	- [x] Diseñar una interfaz básica para la carga del proceso
+	- [x] Gestionar la instalación automáticamente
+- [x] Dar funcionalidad a los iconos de las plataformas para que abran la aplicación correspondiente con la página del título
 
 ### Posibles implementaciones:
 - [ ] Cambiar la api a la de JustWatch
-- [ ] Implementar cámbio de región dinámico
+- [ ] <s>Implementar cámbio de región dinámico</s>
 
-Vea [open issues](https://github.com/bitasuperactive/CanIWatchIt/issues) para una lista completa de las características propuestas y bugs conocidos.
+Vease [open issues](https://github.com/bitasuperactive/CanIWatchIt/issues) para una lista completa de las características propuestas y bugs conocidos.
 
 <p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
@@ -175,7 +195,7 @@ Si tienes una sugerencia que pueda mejorar este proyecto, por favor haz un fork 
 <!-- LICENSE -->
 ## 📜 Licencia
 
-Distribuido bajo la licencia MIT. Vea [LICENSE](/LICENSE) para más información.
+Distribuido bajo la licencia MIT. Vease [LICENSE](/LICENSE) para más información.
 
 <p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 

@@ -15,18 +15,18 @@ import com.google.gson.annotations.SerializedName
  * @param streamingSources Lista de las plataformas de streaming en que se encuentra disponible
  */
 data class TitleDetailsResponse(
-    val id: Int,
+    val id: Int?,
     @SerializedName("imdb_id")
-    val imdbId: String,
+    val imdbId: String?,
     @SerializedName("poster")
-    val posterUrl: String,
+    val posterUrl: String?,
     @SerializedName("original_title")
-    val title: String,
-    val year: Int,
+    val title: String?,
+    val year: Int?,
     @SerializedName("user_rating")
-    val userRating: Double,
+    val userRating: Double?,
     @SerializedName("plot_overview")
-    val plotOverview: String,
+    val plotOverview: String?,
     @SerializedName("sources")
-    val streamingSources: List<TitleStreamingSource>,
+    val streamingSources: List<TitleStreamingSource>?,
 )

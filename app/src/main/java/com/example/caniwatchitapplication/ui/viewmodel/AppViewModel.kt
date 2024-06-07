@@ -34,6 +34,11 @@ class AppViewModel(
     val availableStreamingSources: LiveData<Resource<List<StreamingSource>>> = _availableStreamingSources
 
     /**
+     * Plataformas de streaming suscritas por el usuario.
+     */
+    val subscribedStreamingSources = repository.getAllSubscribedStreamingSources()
+
+    /**
      * Detalles de los títulos resultantes de la búsqueda del usuario.
      */
     val searchedTitles: LiveData<Resource<List<TitleDetailsResponse>>> = _searchedTitles
@@ -45,20 +50,22 @@ class AppViewModel(
     }
 
     /**
+     * @see AppRepository.fetchAppLatestRelease
+     */
+    suspend fun fetchAppLatestRelease() = repository.fetchAppLatestRelease()
+
+    /**
      * @see AppRepository.searchForTitles
      */
     fun searchForTitles(searchValue: String) = viewModelScope.launch {
         
         _searchedTitles.postValue(Resource.Loading())
-        
-        try
-        {
+
+        try {
             val resource = repository.searchForTitles(searchValue)
             _searchedTitles.postValue(resource)
-        } catch (t: Throwable)
-        {
-            when (t)
-            {
+        } catch (t: Throwable) {
+            when (t) {
                 is IOException -> _searchedTitles.postValue(Resource.Error("Network failure"))
                 else -> _searchedTitles.postValue(Resource.Error("Json to Kotlin conversion failure"))
             }
@@ -66,16 +73,9 @@ class AppViewModel(
     }
 
     /**
-     * @see AppRepository.getAllSubscribedStreamingSources
-     */
-    fun getAllSubscribedStreamingSources() = repository.getAllSubscribedStreamingSources()
-
-    /**
      * @see AppRepository.upsertSubscribedStreamingSource
      */
-    fun upsertSubscribedStreamingSource(
-        streamingSource: StreamingSource
-    ) = viewModelScope.launch {
+    fun upsertSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
 
         repository.upsertSubscribedStreamingSource(streamingSource)
     }
@@ -83,9 +83,7 @@ class AppViewModel(
     /**
      * @see AppRepository.deleteSubscribedStreamingSource
      */
-    fun deleteSubscribedStreamingSource(
-        streamingSource: StreamingSource
-    ) = viewModelScope.launch {
+    fun deleteSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
         
         repository.deleteSubscribedStreamingSource(streamingSource)
     }
@@ -105,14 +103,11 @@ class AppViewModel(
 
         _availableStreamingSources.postValue(Resource.Loading())
 
-        try
-        {
+        try {
             val resource = repository.getAllStreamingSources()
             _availableStreamingSources.postValue(resource)
-        } catch (t: Throwable)
-        {
-            when (t)
-            {
+        } catch (t: Throwable) {
+            when (t) {
                 is IOException -> _availableStreamingSources.postValue(Resource.Error("Network failure"))
                 else -> _availableStreamingSources.postValue(Resource.Error("Json to Kotlin conversion failure"))
             }

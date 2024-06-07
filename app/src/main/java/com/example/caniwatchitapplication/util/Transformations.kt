@@ -10,41 +10,55 @@ import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOU
 import java.time.LocalDate
 
 /**
- * Clase que contiene métodos de transformación y filtrado de objetos.
+ * Métodos de transformación y filtrado de objetos.
  */
 class Transformations
 {
     companion object
     {
         /**
-         * Filtra la lista de plataformas de streaming para obtener aquellas que cumplan con unos
-         * criterios de coincidencia prestablecidos.
+         * Recrea la lista de plataformas añadiendo los enlaces correspondientes a sus logos y
+         * la filtra en base al tipo de contenido y la región de comercialización.
          *
-         * _Dado que la api no nos devuelve la misma información para las plataformas en que
-         * un título está disponible que para todas las plataformas soportadas, necesitamos
-         * realizar esta conversión y, así obtener por ejemplo, el url a los logos de las
-         * plataformas._
+         * @param availableStreamingSources Plataformas de streaming de las que extraer
+         * los enlaces a los logos
          *
-         * @param titleSources Lista de plataformas de streaming en las que un título
-         * específico se encuentra disponible.
-         *
-         * @return Lista de plataformas de streaming que cumplen con los criterios de coincidencia
-         * para los títulos proporcionados.
-         *
+         * @see addLogos
          * @see STREAMING_SOURCE_TYPES
          * @see STREAMING_SOURCE_REGIONS
          */
-        fun List<StreamingSource>.filterByTitleSources(
-            titleSources: List<TitleStreamingSource>
-        ): List<StreamingSource>
+        fun List<TitleStreamingSource>.recreate(
+            availableStreamingSources: List<StreamingSource>
+        ): List<TitleStreamingSource>
         {
-            return this.filter { source ->
-                titleSources.any { titleSource ->
-                    titleSource.id == source.id
-                            // Criterios de coincidencia
-                            && titleSource.type == STREAMING_SOURCE_TYPES
-                            && titleSource.region == STREAMING_SOURCE_REGIONS
-                }
+            val titleSourcesWithLogos = this.addLogos(availableStreamingSources)
+
+            return titleSourcesWithLogos.filter { titleSource ->
+                titleSource.type == STREAMING_SOURCE_TYPES
+                        && titleSource.region == STREAMING_SOURCE_REGIONS
+            }
+        }
+
+        /**
+         * Añade los enlaces a los logos de las plataformas especificadas.
+         *
+         * _Dado que la api no nos devuelve la misma información para las plataformas en que
+         * un título está disponible que para todas las plataformas soportadas, necesitamos
+         * realizar esta transformación para recuperar los logos._
+         *
+         * @param availableStreamingSources Plataformas de streaming de las que extraer
+         * los enlaces a los logos
+         */
+        private fun List<TitleStreamingSource>.addLogos(
+            availableStreamingSources: List<StreamingSource>
+        ): List<TitleStreamingSource>
+        {
+            return this.map { titleSource ->
+                titleSource.copy(
+                    logoUrl = availableStreamingSources.firstOrNull { source ->
+                        source.id == titleSource.id
+                    }?.logoUrl ?: ""
+                )
             }
         }
 
@@ -56,9 +70,9 @@ class Transformations
         fun StreamingSource.toSubscribedEntity() : SubscribedStreamingSourceEntity
         {
             return SubscribedStreamingSourceEntity(
-                this.id,
-                this.name,
-                this.logoUrl
+                this.id ?: 0,
+                this.name ?: "",
+                this.logoUrl ?: ""
             )
         }
 
@@ -80,7 +94,12 @@ class Transformations
         fun List<StreamingSource>.toAvailableEntityList(): List<AvailableStreamingSourceEntity>
         {
             return this.map {
-                AvailableStreamingSourceEntity(it.id, it.name, it.logoUrl, LocalDate.now())
+                AvailableStreamingSourceEntity(
+                    it.id ?: 0,
+                    it.name ?: "",
+                    it.logoUrl ?: "",
+                    LocalDate.now()
+                )
             }
         }
     }

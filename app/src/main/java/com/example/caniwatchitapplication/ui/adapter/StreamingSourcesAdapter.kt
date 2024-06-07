@@ -3,7 +3,6 @@ package com.example.caniwatchitapplication.ui.adapter
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.example.caniwatchitapplication.data.model.StreamingSource
 import com.example.caniwatchitapplication.databinding.ItemStreamingSourcePreviewBinding
@@ -22,7 +21,7 @@ import com.example.caniwatchitapplication.util.Constants
  * @param lifecycleOwner Propietario del ciclo de vida del adaptador
  */
 class StreamingSourcesAdapter(
-    private val subscribedStreamingSources: LiveData<List<StreamingSource>> = MutableLiveData(),
+    private val subscribedStreamingSources: LiveData<List<StreamingSource>>,
     private val lifecycleOwner: LifecycleOwner
 ) : BaseStreamingSourcesAdapter()
 {
@@ -76,7 +75,7 @@ class StreamingSourcesAdapter(
      * @param listener Función Unit que proporciona la plataforma de streaming clicada y un
      * booleano indicativo de si la plataforma ha sido suscrita o anulada
      */
-    fun setupItemOnClickListener(listener: ((StreamingSource, Boolean) -> Unit))
+    fun setupOnItemClickListener(listener: ((StreamingSource, Boolean) -> Unit))
     {
         onItemClickListener = listener
     }

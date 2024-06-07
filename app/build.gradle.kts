@@ -13,8 +13,8 @@ android {
         applicationId = "com.example.caniwatchitapplication"
         minSdk = 26
         targetSdk = 34
-        versionCode = 70
-        versionName = "0.70-beta"
+        versionCode = 100
+        versionName = "1.00-beta"
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

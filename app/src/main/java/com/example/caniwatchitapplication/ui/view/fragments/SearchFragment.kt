@@ -69,7 +69,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
 
     private fun setupAdapters()
     {
-        titlesAdapter = TitlesAdapter(viewModel, viewLifecycleOwner)
+        titlesAdapter = TitlesAdapter(this.requireView(), viewModel, viewLifecycleOwner)
         subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
 
         binding.rvSearchedTitles.apply {
@@ -88,16 +88,12 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     /**
      * Abre el teclado virtual al pulsar la pista de búsqueda.
      */
-    // TODO - COPY-PASTED
     private fun setupSearchHintButton()
     {
         binding.tvHintToSearch.setOnClickListener {
 
             binding.etTitleToSearch.requestFocus()
-            // Show the keyboard.
-            val imm =
-                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.etTitleToSearch, InputMethodManager.SHOW_IMPLICIT)
+            showKeyboard()
         }
     }
 
@@ -107,15 +103,19 @@ class SearchFragment : Fragment(R.layout.fragment_search)
      */
     // TODO - COPY-PASTED
     @SuppressLint("ClickableViewAccessibility")
-    private fun setupSearchEraseButton(view: View) {
+    private fun setupSearchEraseButton(view: View)
+    {
         binding.etTitleToSearch.setOnTouchListener { _, event ->
             view.performClick()
 
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd =
                     binding.etTitleToSearch.compoundDrawablesRelative[2] // 2 representa el índice de la imagen a la derecha
-                if (drawableEnd != null && event.rawX >= binding.etTitleToSearch.right - drawableEnd.bounds.width()) {
+                if (drawableEnd != null
+                    // Se añaden 36 píxeles al tamaño del botón virtual para facilitar la pulsación
+                    && event.rawX >= binding.etTitleToSearch.right - (drawableEnd.bounds.width() + 36)) {
                     binding.etTitleToSearch.text = null
+                    showKeyboard()
                     return@setOnTouchListener true
                 }
             }
@@ -128,7 +128,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
      *
      * @see SEARCH_FOR_TITLES_DELAY
      */
-    private fun setupSearchListener() {
+    private fun setupSearchListener()
+    {
         var searchJob: Job? = null
         binding.etTitleToSearch.addTextChangedListener {
             searchJob?.cancel()
@@ -154,8 +155,9 @@ class SearchFragment : Fragment(R.layout.fragment_search)
      *
      * @see TitleFragment
      */
-    private fun setupTitleOnClickListener() {
-        titlesAdapter.setupOnClickListener {
+    private fun setupTitleOnClickListener()
+    {
+        titlesAdapter.setupOnItemClickListener {
             val bundle = bundleOf("titleIds" to it)
 
             findNavController().navigate(
@@ -168,8 +170,9 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     /**
      * Actualiza el adaptador de las plataformas suscritas por el usuario.
      */
-    private fun setupSubscribedSourcesObserver() {
-        viewModel.getAllSubscribedStreamingSources().observe(viewLifecycleOwner) {
+    private fun setupSubscribedSourcesObserver()
+    {
+        viewModel.subscribedStreamingSources.observe(viewLifecycleOwner) {
 
             subscribedStreamingSourcesAdapter.submitList(it)
         }
@@ -182,7 +185,8 @@ class SearchFragment : Fragment(R.layout.fragment_search)
      *
      * @see Resource
      */
-    private fun setupSearchedTitlesObserver() {
+    private fun setupSearchedTitlesObserver()
+    {
         viewModel.searchedTitles.observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Loading -> {
@@ -203,7 +207,7 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                         hideProgressBar()
                         Snackbar.make(
                             binding.root,
-                            "Se ha producido un error: $it",
+                            getString(R.string.unknown_error, it),
                             Snackbar.LENGTH_LONG
                         ).apply {
                             setAnchorView(R.id.bottomNavigationView)
@@ -212,6 +216,17 @@ class SearchFragment : Fragment(R.layout.fragment_search)
                 }
             }
         }
+    }
+
+    /**
+     * Muestra el teclado virtual.
+     */
+    // TODO - COPY-PASTED
+    private fun showKeyboard()
+    {
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(binding.etTitleToSearch, InputMethodManager.SHOW_IMPLICIT)
     }
     
     private fun hideSearchHint()
