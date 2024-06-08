@@ -131,6 +131,13 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
 <!-- USAGE EXAMPLES -->
 ## Uso
 
+> [!NOTE]
+> * La ApiKey del Endpoint es grauita y está limitada a 1000 peticiones mensuales.
+> * Búsqueda de títulos limitada a 1 sólo resultado.
+> * Suscribirse a plataformas de streaming no tiene mayor utilidad que mostrarlas a color en los resultados de búsqueda.
+
+<br />
+
 1️⃣ Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming deseadas a filtrar; podrás cambiar tu elección desde esa misma pestaña de "Plataformas".
 
 <br />
