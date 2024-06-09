@@ -8,13 +8,13 @@ plugins {
 android {
     namespace = "com.example.caniwatchitapplication"
     compileSdk = 34
-    
+
     defaultConfig {
         applicationId = "com.example.caniwatchitapplication"
         minSdk = 26
         targetSdk = 34
-        versionCode = 100
-        versionName = "1.00-beta"
+        versionCode = 110
+        versionName = "1.10-beta"
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

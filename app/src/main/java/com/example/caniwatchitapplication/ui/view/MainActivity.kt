@@ -7,7 +7,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.data.database.AppDatabase
-import com.example.caniwatchitapplication.data.repository.AppRepository
+import com.example.caniwatchitapplication.data.repository.GithubRepository
+import com.example.caniwatchitapplication.data.repository.PantryRepository
+import com.example.caniwatchitapplication.data.repository.WatchmodeRepository
 import com.example.caniwatchitapplication.databinding.ActivityMainBinding
 import com.example.caniwatchitapplication.ui.view.dialogs.UpdateDialog
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
@@ -20,11 +22,6 @@ class MainActivity : AppCompatActivity()
 {
     private lateinit var binding: ActivityMainBinding
 
-    /**
-     * Snackbar indicativo de que se debe seleccionar al menos una plataforma de streaming.
-     */
-    private lateinit var snackbarHint: Snackbar
-
     lateinit var appViewModel: AppViewModel
     
     override fun onCreate(savedInstanceState: Bundle?)
@@ -34,22 +31,15 @@ class MainActivity : AppCompatActivity()
         setContentView(binding.root)
 
         val database = AppDatabase(this)
-        val repository = AppRepository(database)
-        val appViewModelProvider = AppViewModelProvider(repository)
+        val watchmodeRepo = WatchmodeRepository(database)
+        val githubRepo = GithubRepository()
+        val pantryRepo = PantryRepository()
+        val appViewModelProvider = AppViewModelProvider(watchmodeRepo, githubRepo, pantryRepo)
         
         appViewModel = ViewModelProvider(this, appViewModelProvider)[AppViewModel::class.java]
-        
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.appNavHostFragment) as NavHostFragment
-        binding.bottomNavigationView.setupWithNavController(navHostFragment.navController)
 
-        snackbarHint = Snackbar.make(
-            binding.root,
-            getString(R.string.select_at_least_one_streaming_source),
-            Snackbar.LENGTH_INDEFINITE
-        ).apply {
-            anchorView = binding.bottomNavigationView
-        }
+        val navHostFragment = binding.appNavHostFragment.getFragment<NavHostFragment>()
+        binding.bottomNavigationView.setupWithNavController(navHostFragment.navController)
 
         setupNavigationBlocker()
 
@@ -62,6 +52,15 @@ class MainActivity : AppCompatActivity()
      */
     private fun setupNavigationBlocker()
     {
+        // Hint para seleccionar al menos una plataforma de streaming
+        val snackbarHint = Snackbar.make(
+            binding.root,
+            getString(R.string.select_at_least_one_streaming_source),
+            Snackbar.LENGTH_INDEFINITE
+        ).apply {
+            anchorView = binding.bottomNavigationView
+        }
+
         appViewModel.subscribedStreamingSources.observe(this) { subscribedSources ->
 
             if (subscribedSources.isEmpty()) {

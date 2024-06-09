@@ -5,9 +5,19 @@ class Constants
     companion object
     {
         /**
+         * Enlace base a la api de Watchmode.
+         */
+        const val WATCHMODE_API_BASE_URL = "https://api.watchmode.com"
+
+        /**
          * Enlace al repositorio de la aplicación en GitHub.
          */
         const val APP_REPOSITORY_BASE_URL = "https://github.com/bitasuperactive/CanIWatchIt/"
+
+        /**
+         * Enlace base a la api de Pantry.
+         */
+        const val PANTRY_API_BASE_URL = "https://getpantry.cloud"
 
         /**
          * Nombre de la base de datos de Room para esta aplicación.
@@ -15,14 +25,10 @@ class Constants
         const val APP_DATABASE_NAME = "caniwatchit_db.db"
 
         /**
-         * Enlace base a la api.
+         * Clave api de respaldo para Watchmode en caso de que la base de datos remota no esté
+         * disponible o no devuelva ninguna clave para Watchmode.
          */
-        const val WATCHMODE_API_BASE_URL = "https://api.watchmode.com"
-
-        /**
-         * Clave de acceso gratuito a la api. Limitada a 1000 llamadas mensuales.
-         */
-        const val API_KEY = "kX2bi0YR5leUYSo8FJXctbAfILTuk5wNDMkBiZrB"
+        const val WATCHMODE_BACKUP_API_KEY = "DTTAVpb3QzVjtZdADZJ1YiVo3MzIzHWWJfWFukvo"
 
         /**
          * Límite de la cantidad de títulos detallados a recuperar de la api.

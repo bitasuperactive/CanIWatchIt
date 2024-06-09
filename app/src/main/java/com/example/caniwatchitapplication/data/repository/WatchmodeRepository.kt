@@ -1,21 +1,18 @@
 package com.example.caniwatchitapplication.data.repository
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.caniwatchitapplication.data.api.RetrofitProvider
 import com.example.caniwatchitapplication.data.database.AppDatabase
-import com.example.caniwatchitapplication.data.model.AppVersionInfo
-import com.example.caniwatchitapplication.data.model.QuotaResponse
-import com.example.caniwatchitapplication.data.model.StreamingSource
-import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
-import com.example.caniwatchitapplication.data.model.TitleIds
+import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
+import com.example.caniwatchitapplication.data.model.watchmode.TitleDetailsResponse
+import com.example.caniwatchitapplication.data.model.watchmode.TitleIds
 import com.example.caniwatchitapplication.util.Constants
+import com.example.caniwatchitapplication.util.Constants.Companion.DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES
 import com.example.caniwatchitapplication.util.Resource
 import com.example.caniwatchitapplication.util.Transformations.Companion.toAvailableEntityList
 import com.example.caniwatchitapplication.util.Transformations.Companion.toModelList
 import com.example.caniwatchitapplication.util.Transformations.Companion.toSubscribedEntity
-import java.io.IOException
 import java.time.LocalDate
 import java.time.Period
 
@@ -28,56 +25,44 @@ import java.time.Period
  *
  * @see AppDatabase
  */
-class AppRepository(
+class WatchmodeRepository(
     private val database: AppDatabase
 )
 {
-    private val tag = "AppRepository"
-
     /**
-     * @see com.example.caniwatchitapplication.data.api.GithubApi.getLatestRelease
-     */
-    suspend fun fetchAppLatestRelease(): Resource<AppVersionInfo>
-    {
-        val response = RetrofitProvider.githubApi.getLatestRelease()
-
-        if (response.isSuccessful) {
-            response.body()?.let {
-                return Resource.Success(it)
-            }
-        }
-
-        return Resource.Error(response.message(), response.body())
-    }
-
-    /**
-     * Imprime en consola el número de peticiones realizadas a la api y el número de peticiones
-     * disponibles por mes natural.
+     * Filtra la lista de claves api para Watchmode en base al número de peticiones restantes.
      *
-     * @see getApiQuota
+     * Comprueba que el Endpoint Watchmode se encuentran disponible y garantiza
+     * una lista de claves api poblada exclusivamente con aquellas que tengan disponibles un mínimo
+     * de 20 peticiones, en cuyo defecto devolverá una lista vacía.
+     *
+     * @param keyList Lista de claves api para Watchmode
+     *
+     * @return Lista de claves api con 20 o más peticiones disponibles
+     *
+     * @throws Throwable Propaga todos los errores.
+     *
+     * @see com.example.caniwatchitapplication.data.api.WatchmodeApi.getQuota
      */
-    suspend fun logApiQuota()
+    suspend fun filterApiKeys(keyList: List<String>): List<String>
     {
-        try
-        {
-            when (val resource = getApiQuota()) {
+        val result = ArrayList<String>()
 
-                is Resource.Success -> {
-                    resource.data?.let {
-                        Log.d(tag, "Requests used (Api quota): ${it.quotaUsed}/${it.quota}")
+        for (key: String in keyList) {
+            val response = RetrofitProvider.watchmodeApi.getQuota(key)
+
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    val quotaLeft = it.quota?.minus(it.quotaUsed ?: it.quota)
+
+                    if (quotaLeft != null && quotaLeft >= 20) {
+                        result.add(key)
                     }
                 }
-                else -> Log.d(tag, "Error on logging api quota: ${resource.message}")
-            }
-
-        } catch (t: Throwable)
-        {
-            when (t)
-            {
-                is IOException -> Log.d(tag, "Exception on logging api quota: Network failure")
-                else -> Log.d(tag, "Error on logging api quota: Json to Kotlin conversion failure")
             }
         }
+
+        return result
     }
 
     /**
@@ -85,11 +70,11 @@ class AppRepository(
      * base de datos o, si se ha cumplido el plazo prestablecido, la actualiza recuperando los datos
      * de la api.
      *
-     * @see Constants.DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES
+     * @see updateIsNeeded
      * @see com.example.caniwatchitapplication.data.database.dao.AvailableStreamingSourcesDao.getAll
      * @see com.example.caniwatchitapplication.data.api.WatchmodeApi.getAllStreamingSources
      */
-    suspend fun getAllStreamingSources(): Resource<List<StreamingSource>>
+    suspend fun getAllStreamingSources(apiKey: String): Resource<List<StreamingSource>>
     {
         // Fetch from database
         val availableStreamingSources = database.getAvailableStreamingSourcesDao().getAll()
@@ -97,18 +82,18 @@ class AppRepository(
         if (availableStreamingSources.isNotEmpty()) {
             // Check if the data is 24h old to update it
             val lastUpdated = availableStreamingSources[0].lastUpdated
-            if (!updateIsNeeded(lastUpdated, Constants.DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES)) {
+            if (!updateIsNeeded(lastUpdated)) {
                 return Resource.Success(availableStreamingSources.toModelList())
             }
         }
 
         // Fetch from api
-        val response = RetrofitProvider.watchmodeApi.getAllStreamingSources()
+        val response = RetrofitProvider.watchmodeApi.getAllStreamingSources(apiKey)
 
         if (response.isSuccessful) {
 
             response.body()?.let {
-                // Store available streaming sources in Room
+                // Store available streaming sources in database
                 database.getAvailableStreamingSourcesDao().upsertAll(it.toAvailableEntityList())
                 return Resource.Success(it)
             }
@@ -127,14 +112,14 @@ class AppRepository(
      * @see com.example.caniwatchitapplication.data.api.WatchmodeApi.searchForTitles
      * @see getTitlesDetails
      */
-    suspend fun searchForTitles(searchValue: String): Resource<List<TitleDetailsResponse>>
+    suspend fun searchForTitles(apiKey: String, searchValue: String): Resource<List<TitleDetailsResponse>>
     {
-        val response = RetrofitProvider.watchmodeApi.searchForTitles(searchValue)
+        val response = RetrofitProvider.watchmodeApi.searchForTitles(apiKey, searchValue)
 
         if (response.isSuccessful) {
 
             response.body()?.let {
-                return getTitlesDetails(it.titleIds)
+                return getTitlesDetails(it.titleIds, apiKey)
             }
         }
 
@@ -164,41 +149,10 @@ class AppRepository(
     ) = database.getSubscribedStreamingSourcesDao().delete(streamingSource.toSubscribedEntity())
 
     /**
-     * @see com.example.caniwatchitapplication.data.api.WatchmodeApi.getQuota
-     */
-    private suspend fun getApiQuota(): Resource<QuotaResponse>
-    {
-        val response = RetrofitProvider.watchmodeApi.getQuota()
-
-        if (response.isSuccessful) {
-
-            response.body()?.let {
-                return Resource.Success(it)
-            }
-        }
-
-        return Resource.Error(response.message(), response.body())
-    }
-
-    /**
-     * Comprueba si se ha cumplido el plazo especificado para actualizar la base de datos.
-     *
-     * @param lastUpdated Fecha de la última actualización
-     * @param daysToUpdate Número de días a esperar para actualizar los datos
-     *
-     * @return Verdadero si es necesario actualizar, falso en su defecto
-     */
-    private fun updateIsNeeded(lastUpdated: LocalDate, daysToUpdate: Int): Boolean
-    {
-        val periodFromLastUpdate = Period.between(lastUpdated, LocalDate.now())
-        return periodFromLastUpdate.days >= daysToUpdate
-    }
-
-    /**
      * Recupera los detalles de los títulos especificados.
      *
-     * _El número de peticiones se encuentra limitado por la correspondiente constante para evitar
-     * excesos de llamadas a la api._
+     * _El número de peticiones a la api se encuentra limitado por la correspondiente constante
+     * para controlar la cuota._
      *
      * @param titleIds Lista de identificadores para los títulos a recuperar
      *
@@ -206,14 +160,17 @@ class AppRepository(
      *
      * @see com.example.caniwatchitapplication.data.api.WatchmodeApi.getTitleDetails
      */
-    private suspend fun getTitlesDetails(titleIds: List<TitleIds>): Resource<List<TitleDetailsResponse>>
+    private suspend fun getTitlesDetails(
+        titleIds: List<TitleIds>,
+        apiKey: String
+    ): Resource<List<TitleDetailsResponse>>
     {
         val result = ArrayList<TitleDetailsResponse>(titleIds.size)
 
         // Calls limited by the following constant.
         for (title in titleIds.take(Constants.MAX_TITLE_DETAILS_REQUESTS))
         {
-            val response = RetrofitProvider.watchmodeApi.getTitleDetails(title.id.toString())
+            val response = RetrofitProvider.watchmodeApi.getTitleDetails(title.id.toString(), apiKey)
             val titleDetails = response.body()
 
             if (response.isSuccessful && titleDetails != null) {
@@ -226,5 +183,19 @@ class AppRepository(
         }
 
         return Resource.Success(result)
+    }
+
+    /**
+     * Comprueba si se ha cumplido el plazo predefinido para actualizar las plataformas de
+     * streaming disponibles en la base de datos Room.
+     *
+     * @param lastUpdated Fecha de la última actualización
+     *
+     * @return Verdadero si es necesario actualizar, falso en su defecto
+     */
+    private fun updateIsNeeded(lastUpdated: LocalDate): Boolean
+    {
+        val periodFromLastUpdate = Period.between(lastUpdated, LocalDate.now())
+        return periodFromLastUpdate.days >= DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES
     }
 }

@@ -3,8 +3,8 @@ package com.example.caniwatchitapplication.util
 import com.example.caniwatchitapplication.data.database.entities.AvailableStreamingSourceEntity
 import com.example.caniwatchitapplication.data.database.entities.StreamingSourceEntity
 import com.example.caniwatchitapplication.data.database.entities.SubscribedStreamingSourceEntity
-import com.example.caniwatchitapplication.data.model.StreamingSource
-import com.example.caniwatchitapplication.data.model.TitleStreamingSource
+import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
+import com.example.caniwatchitapplication.data.model.watchmode.TitleStreamingSource
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_REGIONS
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_TYPES
 import java.time.LocalDate

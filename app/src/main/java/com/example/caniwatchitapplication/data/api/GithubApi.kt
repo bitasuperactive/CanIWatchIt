@@ -1,6 +1,6 @@
 package com.example.caniwatchitapplication.data.api
 
-import com.example.caniwatchitapplication.data.model.AppVersionInfo
+import com.example.caniwatchitapplication.data.model.github.AppVersionInfo
 import retrofit2.Response
 import retrofit2.http.GET
 

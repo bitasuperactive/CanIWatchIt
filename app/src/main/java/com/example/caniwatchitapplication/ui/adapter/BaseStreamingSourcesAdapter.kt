@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.caniwatchitapplication.R
-import com.example.caniwatchitapplication.data.model.StreamingSource
+import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
 
 /**
  * Implementa la funcionalidad base de los adaptadores para las plataformas de streaming.

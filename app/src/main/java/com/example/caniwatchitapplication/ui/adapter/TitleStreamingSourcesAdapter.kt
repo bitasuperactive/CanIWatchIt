@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.caniwatchitapplication.R
-import com.example.caniwatchitapplication.data.model.StreamingSource
-import com.example.caniwatchitapplication.data.model.TitleStreamingSource
+import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
+import com.example.caniwatchitapplication.data.model.watchmode.TitleStreamingSource
 import com.example.caniwatchitapplication.databinding.ItemStreamingSourcePreviewBinding
 import com.example.caniwatchitapplication.util.Constants
 
@@ -73,9 +73,12 @@ class TitleStreamingSourcesAdapter(
 
         // Set logos image
         holder.itemView.apply {
-            if (!streamingSource.logoUrl.isNullOrEmpty()) {
-                Glide.with(context).load(streamingSource.logoUrl).into(binding.ivLogo)
-            }
+
+            Glide.with(context)
+                .load(streamingSource.logoUrl)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher_round)
+                .into(binding.ivLogo)
 
             setOnClickListener {
                 onItemClickListener?.let { onItemClickHandler ->

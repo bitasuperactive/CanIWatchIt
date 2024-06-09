@@ -30,6 +30,6 @@
         tools:layout="@layout/fragment_title">
         <argument
             android:name="titleIds"
-            app:argType="com.example.caniwatchitapplication.data.model.TitleIds" />
+            app:argType="com.example.caniwatchitapplication.data.model.watchmode.TitleIds" />
     </fragment>
 </navigation>

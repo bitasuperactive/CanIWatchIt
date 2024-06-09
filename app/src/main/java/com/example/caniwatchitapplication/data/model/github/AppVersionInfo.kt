@@ -1,4 +1,4 @@
-package com.example.caniwatchitapplication.data.model
+package com.example.caniwatchitapplication.data.model.github
 
 /**
  * Información de una versión específica de la aplicación.

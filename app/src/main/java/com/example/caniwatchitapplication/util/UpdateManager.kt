@@ -67,7 +67,7 @@ class UpdateManager(
      * @throws FileNotFoundException Si la ruta predefinida no existe o no es un archivo normal.
      * @throws IllegalArgumentException Si la ruta predefinida no es un paquete android o APK.
      */
-    fun install()
+    fun install() // TODO - COPY-PASTED
     {
         if (!outputFile.exists() || !outputFile.isFile) {
             throw FileNotFoundException("Provided file path does not exist.")
@@ -82,11 +82,11 @@ class UpdateManager(
             outputFile
         )
 
-        // TODO - COPY-PASTED
         val intent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(apkUri, "application/vnd.android.package-archive")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
+
         context.startActivity(intent)
     }
 }

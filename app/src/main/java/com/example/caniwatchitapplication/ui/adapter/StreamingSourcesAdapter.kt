@@ -4,9 +4,10 @@ import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.bumptech.glide.Glide
-import com.example.caniwatchitapplication.data.model.StreamingSource
+import com.example.caniwatchitapplication.R
+import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
 import com.example.caniwatchitapplication.databinding.ItemStreamingSourcePreviewBinding
-import com.example.caniwatchitapplication.util.Constants
+import com.example.caniwatchitapplication.util.Constants.Companion.MAX_STREAMING_SOURCE_LOGO_PX_SIZE
 
 /**
  * Adaptador para las plataformas de streaming disponibles.
@@ -32,13 +33,17 @@ class StreamingSourcesAdapter(
 
         // Set maximum logo size
         binding.ivLogo.apply {
-            maxHeight = Constants.MAX_STREAMING_SOURCE_LOGO_PX_SIZE
-            maxWidth = Constants.MAX_STREAMING_SOURCE_LOGO_PX_SIZE
+            maxHeight = MAX_STREAMING_SOURCE_LOGO_PX_SIZE
+            maxWidth = MAX_STREAMING_SOURCE_LOGO_PX_SIZE
         }
 
         // Set logos image and click functionality
         holder.itemView.apply {
-            Glide.with(context).load(streamingSource.logoUrl).into(binding.ivLogo)
+            Glide.with(context)
+                .load(streamingSource.logoUrl)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher_round)
+                .into(binding.ivLogo)
 
             setOnClickListener {
                 onItemClickListener?.let { onItemClickHandler ->

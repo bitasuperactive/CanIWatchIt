@@ -1,10 +1,9 @@
 package com.example.caniwatchitapplication.data.api
 
-import com.example.caniwatchitapplication.data.model.QuotaResponse
-import com.example.caniwatchitapplication.data.model.StreamingSourcesResponse
-import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
-import com.example.caniwatchitapplication.data.model.TitlesIdsResponse
-import com.example.caniwatchitapplication.util.Constants.Companion.API_KEY
+import com.example.caniwatchitapplication.data.model.watchmode.QuotaResponse
+import com.example.caniwatchitapplication.data.model.watchmode.StreamingSourcesResponse
+import com.example.caniwatchitapplication.data.model.watchmode.TitleDetailsResponse
+import com.example.caniwatchitapplication.data.model.watchmode.TitlesIdsResponse
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_REGIONS
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_TYPES
 import com.example.caniwatchitapplication.util.Constants.Companion.TITLE_LANGUAGE
@@ -28,7 +27,7 @@ interface WatchmodeApi
     @GET("/v1/status/")
     suspend fun getQuota(
         @Query("apiKey")
-        apiKey: String = API_KEY
+        apiKey: String
     ): Response<QuotaResponse>
 
     /**
@@ -38,7 +37,7 @@ interface WatchmodeApi
     @GET("/v1/sources/")
     suspend fun getAllStreamingSources(
         @Query("apiKey")
-        apiKey: String = API_KEY,
+        apiKey: String,
         @Query("types")
         types: String = STREAMING_SOURCE_TYPES,
         @Query("regions")
@@ -53,10 +52,10 @@ interface WatchmodeApi
      */
     @GET("/v1/search/")
     suspend fun searchForTitles(
+        @Query("apiKey")
+        apiKey: String,
         @Query("search_value")
         searchValue: String,
-        @Query("apiKey")
-        apiKey: String = API_KEY,
         @Query("search_field")
         searchField: String = "name",
         @Query("types")
@@ -73,7 +72,7 @@ interface WatchmodeApi
         @Path("title_id")
         titleId: String,
         @Query("apiKey")
-        apiKey: String = API_KEY,
+        apiKey: String,
         @Query("append_to_response")
         appendToResponse: String = "sources",
         @Query("language")

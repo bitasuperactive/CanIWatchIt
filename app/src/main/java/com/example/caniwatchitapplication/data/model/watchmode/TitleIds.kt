@@ -1,4 +1,4 @@
-package com.example.caniwatchitapplication.data.model
+package com.example.caniwatchitapplication.data.model.watchmode
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

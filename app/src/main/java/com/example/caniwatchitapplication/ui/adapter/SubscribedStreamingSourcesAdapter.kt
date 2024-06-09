@@ -1,6 +1,7 @@
 package com.example.caniwatchitapplication.ui.adapter
 
 import com.bumptech.glide.Glide
+import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.databinding.ItemStreamingSourcePreviewBinding
 import com.example.caniwatchitapplication.util.Constants.Companion.MIN_STREAMING_SOURCE_LOGO_PX_SIZE
 
@@ -26,7 +27,11 @@ class SubscribedStreamingSourcesAdapter : BaseStreamingSourcesAdapter()
 
         // Set logos image
         holder.itemView.apply {
-            Glide.with(context).load(service.logoUrl).into(binding.ivLogo)
+            Glide.with(context)
+                .load(service.logoUrl)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher_round)
+                .into(binding.ivLogo)
         }
     }
 }

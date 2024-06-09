@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.caniwatchitapplication.R
-import com.example.caniwatchitapplication.data.model.TitleDetailsResponse
-import com.example.caniwatchitapplication.data.model.TitleIds
+import com.example.caniwatchitapplication.data.model.watchmode.TitleDetailsResponse
+import com.example.caniwatchitapplication.data.model.watchmode.TitleIds
 import com.example.caniwatchitapplication.databinding.ItemTitlePreviewBinding
 import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
 import com.example.caniwatchitapplication.util.Transformations.Companion.recreate
@@ -75,10 +75,11 @@ class TitlesAdapter(
         // Set titles image and data, and set clicks functionality
         holder.itemView.apply {
 
-            val posterUrl = titleDetails.posterUrl
-            if (!posterUrl.isNullOrEmpty()) {
-                Glide.with(this).load(posterUrl).into(binding.ivTitleImage)
-            }
+            Glide.with(this)
+                .load(titleDetails.posterUrl)
+                .placeholder(R.drawable.ic_poster)
+                .error(R.drawable.ic_poster)
+                .into(binding.ivTitleImage)
             
             binding.tvTitle.text = titleDetails.title
             binding.tvYear.text = titleDetails.year.toString()
