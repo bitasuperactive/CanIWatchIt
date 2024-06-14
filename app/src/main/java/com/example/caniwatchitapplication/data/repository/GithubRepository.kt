@@ -4,6 +4,9 @@ import com.example.caniwatchitapplication.data.api.RetrofitProvider
 import com.example.caniwatchitapplication.data.model.github.AppVersionInfo
 import com.example.caniwatchitapplication.util.Resource
 
+/**
+ * Recupera los datos del repositorio de la aplicación requeridos por el ViewModel.
+ */
 class GithubRepository
 {
     /**

@@ -1,34 +1,27 @@
 package com.example.caniwatchitapplication.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
-import com.example.caniwatchitapplication.data.model.watchmode.TitleDetailsResponse
 import com.example.caniwatchitapplication.data.repository.GithubRepository
 import com.example.caniwatchitapplication.data.repository.PantryRepository
 import com.example.caniwatchitapplication.data.repository.WatchmodeRepository
-import com.example.caniwatchitapplication.util.Constants.Companion.WATCHMODE_BACKUP_API_KEY
 import com.example.caniwatchitapplication.util.Resource
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 
 /**
- * Proporciona los datos requeridos por la aplicación.
+ * ViewModel principal. Proporciona las instancias de los repositorios de la aplicación además de
+ * los datos del repositorio en GitHub y las claves api de los Endpoints.
  *
  * @param watchmodeRepo Repositorio de Watchmode
  * @param githubRepo Repositorio de la aplicación
  * @param pantryRepo Repositorio de Pantry
  */
-class AppViewModel(
-    private val watchmodeRepo: WatchmodeRepository,
-    private val githubRepo: GithubRepository,
-    private val pantryRepo: PantryRepository
+open class AppViewModel(
+    val watchmodeRepo: WatchmodeRepository,
+    val githubRepo: GithubRepository,
+    val pantryRepo: PantryRepository
 ) : ViewModel()
 {
     /**
@@ -37,71 +30,19 @@ class AppViewModel(
     private val _watchmodeApiKeys = mutableListOf<String>()
 
     /**
-     * Recupera una clave api aleatoria para Watchmode. Si no hay claves disponibles, devuelve
-     * la clave api de respaldo.
+     * Proporciona una clave api aleatoria para Watchmode.
+     *
+     * Si no hay claves api disponibles, recibiremos el error 401 "Unauthorized" del Endpoint.
+     *
+     * @see fetchWatchmodeApiKeys
      */
-    private val watchmodeApiKeyDeferred: Deferred<String> = viewModelScope.async {
+    val watchmodeApiKeyDeferred: Deferred<String> = viewModelScope.async {
 
         if (_watchmodeApiKeys.isEmpty()) {
-            fetchWatchmodeApiKeys()
+            _watchmodeApiKeys.addAll(fetchWatchmodeApiKeys())
         }
 
-        _watchmodeApiKeys.randomOrNull() ?: WATCHMODE_BACKUP_API_KEY
-    }
-
-    private val _availableStreamingSources = MutableLiveData<Resource<List<StreamingSource>>>()
-
-    private val _searchedTitles = MutableLiveData<Resource<List<TitleDetailsResponse>>>()
-
-    /**
-     * Plataformas de streaming disponibles para ser suscritas por el usuario.
-     */
-    val availableStreamingSources: LiveData<Resource<List<StreamingSource>>> = _availableStreamingSources
-
-    /**
-     * Plataformas de streaming suscritas por el usuario.
-     */
-    val subscribedStreamingSources = watchmodeRepo.getAllSubscribedStreamingSources()
-
-    /**
-     * Detalles de los títulos resultantes de la búsqueda del usuario.
-     */
-    val searchedTitles: LiveData<Resource<List<TitleDetailsResponse>>> = _searchedTitles
-
-    init
-    {
-        getAvailableStreamingSources()
-    }
-
-    /**
-     * Recupera las claves api para Watchmode disponibles en la base de datos remota y la filtra
-     * en base al número de peticiones restantes.
-     *
-     * @see com.example.caniwatchitapplication.data.repository.PantryRepository.getAllApiKeys
-     * @see com.example.caniwatchitapplication.data.repository.WatchmodeRepository.filterApiKeys
-     */
-    private suspend fun fetchWatchmodeApiKeys() = withContext(Dispatchers.IO) {
-
-        try {
-            val allApiKeysResource = pantryRepo.getAllApiKeys()
-
-            if (allApiKeysResource is Resource.Success) {
-                allApiKeysResource.data?.let { allKeys ->
-                    allKeys.watchmode?.let { watchmodeKeys ->
-                        val watchmodeFilteredKeys = watchmodeRepo.filterApiKeys(watchmodeKeys)
-                        _watchmodeApiKeys.clear()
-                        _watchmodeApiKeys.addAll(watchmodeFilteredKeys)
-                    }
-                }
-            }
-
-        } catch (t: Throwable) {
-            if (t is IOException) {
-                // Ignore, no need to manage
-                return@withContext
-            }
-            throw t
-        }
+        _watchmodeApiKeys.randomOrNull() ?: ""
     }
 
     /**
@@ -110,57 +51,33 @@ class AppViewModel(
     suspend fun fetchAppLatestRelease() = githubRepo.fetchAppLatestRelease()
 
     /**
-     * @see WatchmodeRepository.searchForTitles
+     * Recupera las claves api para Watchmode de la base de datos remota.
+     *
+     * @return Lista de claves api para Watchmode que disponen del mínimo de peticiones restantes
+     * requerido por día
+     *
+     * @see com.example.caniwatchitapplication.data.repository.PantryRepository.getAllApiKeys
+     * @see com.example.caniwatchitapplication.data.repository.WatchmodeRepository.filterApiKeys
      */
-    fun searchForTitles(searchValue: String) = viewModelScope.launch {
-        
-        _searchedTitles.postValue(Resource.Loading())
+    private suspend fun fetchWatchmodeApiKeys(): List<String>
+    {
+        var keyList = emptyList<String>()
 
         try {
-            val resource = watchmodeRepo.searchForTitles(
-                watchmodeApiKeyDeferred.await(),
-                searchValue
-            )
-            _searchedTitles.postValue(resource)
-        } catch (t: Throwable) {
-            when (t) {
-                is IOException -> _searchedTitles.postValue(Resource.Error("Network failure"))
-                else -> _searchedTitles.postValue(Resource.Error("Json to Kotlin conversion failure"))
+            val allApiKeysResource = pantryRepo.getAllApiKeys()
+
+            if (allApiKeysResource is Resource.Success) {
+                allApiKeysResource.data?.let { allKeys ->
+                    allKeys.watchmode?.let { watchmodeKeys ->
+                        keyList = watchmodeKeys
+                    }
+                }
             }
+
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
-    }
 
-    /**
-     * @see WatchmodeRepository.upsertSubscribedStreamingSource
-     */
-    fun upsertSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
-
-        watchmodeRepo.upsertSubscribedStreamingSource(streamingSource)
-    }
-
-    /**
-     * @see WatchmodeRepository.deleteSubscribedStreamingSource
-     */
-    fun deleteSubscribedStreamingSource(streamingSource: StreamingSource) = viewModelScope.launch {
-        
-        watchmodeRepo.deleteSubscribedStreamingSource(streamingSource)
-    }
-
-    /**
-     * @see WatchmodeRepository.getAllStreamingSources
-     */
-    private fun getAvailableStreamingSources() = viewModelScope.launch {
-
-        _availableStreamingSources.postValue(Resource.Loading())
-
-        try {
-            val resource = watchmodeRepo.getAllStreamingSources(watchmodeApiKeyDeferred.await())
-            _availableStreamingSources.postValue(resource)
-        } catch (t: Throwable) {
-            when (t) {
-                is IOException -> _availableStreamingSources.postValue(Resource.Error("Network failure"))
-                else -> _availableStreamingSources.postValue(Resource.Error("Json to Kotlin conversion failure"))
-            }
-        }
+        return watchmodeRepo.filterApiKeys(keyList)
     }
 }

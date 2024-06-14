@@ -4,6 +4,9 @@ import com.example.caniwatchitapplication.data.api.RetrofitProvider
 import com.example.caniwatchitapplication.data.model.pantry.ApiKeysResponse
 import com.example.caniwatchitapplication.util.Resource
 
+/**
+ * Recupera los datos de la api Pantry requeridos por el ViewModel.
+ */
 class PantryRepository
 {
     /**

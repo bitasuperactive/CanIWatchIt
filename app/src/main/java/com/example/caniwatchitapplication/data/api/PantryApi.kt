@@ -16,6 +16,6 @@ interface PantryApi
      * Recupera todas las claves api disponibles para la aplicación desde la base de datos remota.
      */
     @Headers("Content-Type: application/json")
-    @GET("/apiv1/pantry/PANTRY_ID/basket/apiKeys") // TODO - PANTRY_ID
+    @GET("/apiv1/pantry/PANTRY_ID/basket/apiKeys")
     suspend fun getAllApiKeys (): Response<ApiKeysResponse>
 }

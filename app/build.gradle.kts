@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
-    id("androidx.navigation.safeargs")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -13,8 +13,8 @@ android {
         applicationId = "com.example.caniwatchitapplication"
         minSdk = 26
         targetSdk = 34
-        versionCode = 110
-        versionName = "1.10-beta"
+        versionCode = 200
+        versionName = "2.0-stable"
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

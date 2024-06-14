@@ -55,7 +55,7 @@ class UpdateDialog(private val ownerActivity: MainActivity): Dialog(ownerActivit
                     resource.data?.let { releaseInfo ->
 
                         if (!releaseInfo.isWhole()) {
-                            throw Exception("La información del paquete de actualización está incompleta")
+                            throw Exception(context.getString(R.string.update_info_incomplete))
                         }
 
                         if (isNewVersionAvailable(releaseInfo.versionCode ?: 0)) {

@@ -67,7 +67,7 @@ class UpdateManager(
      * @throws FileNotFoundException Si la ruta predefinida no existe o no es un archivo normal.
      * @throws IllegalArgumentException Si la ruta predefinida no es un paquete android o APK.
      */
-    fun install() // TODO - COPY-PASTED
+    fun install()
     {
         if (!outputFile.exists() || !outputFile.isFile) {
             throw FileNotFoundException("Provided file path does not exist.")

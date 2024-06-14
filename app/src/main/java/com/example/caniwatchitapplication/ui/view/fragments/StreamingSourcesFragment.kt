@@ -13,14 +13,16 @@ import com.example.caniwatchitapplication.databinding.FragmentStreamingSourcesBi
 import com.example.caniwatchitapplication.ui.adapter.StreamingSourcesAdapter
 import com.example.caniwatchitapplication.ui.adapter.SubscribedStreamingSourcesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
-import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
+import com.example.caniwatchitapplication.ui.viewmodel.StreamingSourcesViewModel
 import com.example.caniwatchitapplication.util.Resource
+import com.example.caniwatchitapplication.util.Transformations
 import com.google.android.material.snackbar.Snackbar
 
 /**
  * Fragmento secundario en el que usuario puede suscribirse a las plataformas de streaming
  * que tenga contratadas para filtrar la búsqueda de los títulos.
  *
+ * @see StreamingSourcesViewModel
  * @see StreamingSourcesAdapter
  * @see SubscribedStreamingSourcesAdapter
  */
@@ -28,7 +30,7 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
 {
     private var _binding: FragmentStreamingSourcesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: AppViewModel
+    private lateinit var viewModel: StreamingSourcesViewModel
     private lateinit var availableStreamingSourcesAdapter: StreamingSourcesAdapter
     private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
     
@@ -45,15 +47,27 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvBuildVersionName.text =
-            getString(R.string.app_version_name, BuildConfig.VERSION_NAME)
 
-        viewModel = (activity as MainActivity).appViewModel
+        val mainActivity = activity as MainActivity
+        viewModel = mainActivity.streamingSourcesViewModel
 
+        setupSavedStateObservers()
         setupAdapters()
         setupAvailableSourcesObserver()
         setupSubscribedSourcesObserver()
-        setupAvailableSourceOnClickListener()
+        setupSourceOnClickListener()
+        setupInformationOnClickListener()
+    }
+
+    /**
+     * Restablece el estado previo de la interfaz.
+     */
+    private fun setupSavedStateObservers()
+    {
+        binding.tvBuildVersionName.text = getString(R.string.app_version_name, BuildConfig.VERSION_NAME)
+        viewModel.informationVisibility.observe(this.viewLifecycleOwner) {
+            binding.tvInformation.visibility = it
+        }
     }
 
     private fun setupAdapters()
@@ -82,14 +96,14 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
      * Actualiza la interfaz acorde con el estado de la petición de plataformas disponibles.
      *
      * _Los errores simplemente se muestran en un SnackBar._
-     *
-     * @see Resource
      */
-    private fun setupAvailableSourcesObserver() {
+    private fun setupAvailableSourcesObserver()
+    {
         viewModel.availableStreamingSources.observe(viewLifecycleOwner) { resource ->
 
             when (resource) {
                 is Resource.Loading -> {
+                    availableStreamingSourcesAdapter.submitList(emptyList())
                     showProgressBar()
                 }
 
@@ -101,11 +115,16 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
                 }
 
                 is Resource.Error -> {
+                    hideHint()
+                    binding.tvUnableToFetchSources.visibility = View.VISIBLE
                     resource.message?.let {
                         hideProgressBar()
                         Snackbar.make(
                             binding.root,
-                            getString(R.string.unknown_error, it),
+                            getString(
+                                R.string.unknown_error,
+                                Transformations.detailWatchmodeErrorMsg(it)
+                            ),
                             Snackbar.LENGTH_LONG
                         ).apply {
                             setAnchorView(R.id.bottomNavigationView)
@@ -119,7 +138,8 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
     /**
      * Actualiza el adaptador de las plataformas suscritas por el usuario.
      */
-    private fun setupSubscribedSourcesObserver() {
+    private fun setupSubscribedSourcesObserver()
+    {
         viewModel.subscribedStreamingSources.observe(viewLifecycleOwner) {
 
             subscribedStreamingSourcesAdapter.submitList(it)
@@ -128,17 +148,35 @@ class StreamingSourcesFragment : Fragment(R.layout.fragment_streaming_sources)
 
     /**
      * Al hacer clic en una plataforma disponible, el usuario se suscribe a la misma y esta se
-     * almacena en la base de datos.
+     * almacena en la base de datos Room.
+     *
+     * @see StreamingSourcesViewModel.upsertSubscribedStreamingSource
      */
-    private fun setupAvailableSourceOnClickListener() {
-        availableStreamingSourcesAdapter.setupOnItemClickListener { service, isChecked ->
+    private fun setupSourceOnClickListener()
+    {
+        availableStreamingSourcesAdapter.setupOnItemClickListener { source, isChecked ->
 
             if (isChecked) {
-                viewModel.upsertSubscribedStreamingSource(service)
+                viewModel.upsertSubscribedStreamingSource(source)
             } else {
-                viewModel.deleteSubscribedStreamingSource(service)
+                viewModel.deleteSubscribedStreamingSource(source)
             }
         }
+    }
+
+    /**
+     * Al hacer clic en el TextView informativo, este se oculta.
+     */
+    private fun setupInformationOnClickListener()
+    {
+        binding.tvInformation.setOnClickListener {
+            viewModel.setInformationVisibility(View.GONE)
+        }
+    }
+
+    private fun hideHint()
+    {
+        binding.tvInformation.visibility = View.GONE
     }
     
     private fun hideProgressBar()

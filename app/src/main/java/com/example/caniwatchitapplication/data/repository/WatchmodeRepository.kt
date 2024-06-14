@@ -1,25 +1,30 @@
 package com.example.caniwatchitapplication.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.example.caniwatchitapplication.data.api.RetrofitProvider
 import com.example.caniwatchitapplication.data.database.AppDatabase
+import com.example.caniwatchitapplication.data.database.entities.QueryEntity
 import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
 import com.example.caniwatchitapplication.data.model.watchmode.TitleDetailsResponse
 import com.example.caniwatchitapplication.data.model.watchmode.TitleIds
-import com.example.caniwatchitapplication.util.Constants
 import com.example.caniwatchitapplication.util.Constants.Companion.DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES
+import com.example.caniwatchitapplication.util.Constants.Companion.MAX_TITLE_DETAILS_REQUESTS
+import com.example.caniwatchitapplication.util.Constants.Companion.QUERY_LIMIT_PER_DAY
+import com.example.caniwatchitapplication.util.Constants.Companion.QUOTA_NEEDED_PER_DAY
+import com.example.caniwatchitapplication.util.Constants.Companion.WATCHMODE_BACKUP_API_KEY
 import com.example.caniwatchitapplication.util.Resource
 import com.example.caniwatchitapplication.util.Transformations.Companion.toAvailableEntityList
 import com.example.caniwatchitapplication.util.Transformations.Companion.toModelList
 import com.example.caniwatchitapplication.util.Transformations.Companion.toSubscribedEntity
 import java.time.LocalDate
 import java.time.Period
+import java.time.temporal.ChronoUnit
 
 /**
- * Recupera los datos requeridos por el ViewModel, gestiona las respuestas de los endpoints y
- * realiza las transformaciones necesarias actuando como puente entre la base de datos, las apis y
- * el ViewModel.
+ * Recupera los datos de la api Watchmode requeridos por el ViewModel y realiza las transformaciones
+ * necesarias actuando como puente entre la base de datos, el Endpoint y el ViewModel.
  *
  * @param database Base de datos Room de la aplicación
  *
@@ -30,22 +35,70 @@ class WatchmodeRepository(
 )
 {
     /**
-     * Filtra la lista de claves api para Watchmode en base al número de peticiones restantes.
+     * Comprueba si se ha alcanzado el límite de búsquedas diarias y resetea el contador si han
+     * pasado uno o más días.
      *
-     * Comprueba que el Endpoint Watchmode se encuentran disponible y garantiza
-     * una lista de claves api poblada exclusivamente con aquellas que tengan disponibles un mínimo
-     * de 20 peticiones, en cuyo defecto devolverá una lista vacía.
+     * @see QUERY_LIMIT_PER_DAY
+     */
+    suspend fun isQueryLimitReached(): Boolean
+    {
+        if (QUERY_LIMIT_PER_DAY == -1) {
+            return false
+        }
+
+        val queryEntity = database.getQueryDao().get() ?: return false
+        val daysPassed = ChronoUnit.DAYS.between(queryEntity.date, LocalDate.now())
+
+        if (daysPassed >= 1) {
+            // Reset counter
+            database.getQueryDao().upsert(QueryEntity(count = 0))
+            return false
+        }
+        if (queryEntity.count < QUERY_LIMIT_PER_DAY) {
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Añade 1 al número de búsquedas de títulos realizadas almacenado en la base de datos.
+     */
+    suspend fun addQueryCount()
+    {
+        val queryEntity = database.getQueryDao().get()
+        val queryCount = (queryEntity?.count ?: 0) + 1
+        database.getQueryDao().upsert(QueryEntity(count = queryCount))
+    }
+
+    /*
+    TODO - Debería contabilizar todas las cuotas restantes en vez de las individuales.
+     Habría que complementarlo con el sistema de seguimiento de las queries realizadas durante
+     la sesión para recuperar siempre un clave api válida, en vez de una aleatoria que podría estar
+     agotada.
+     */
+    /**
+     * Filtra la lista de claves api para Watchmode en base al número de peticiones restantes. Si
+     * la lista está vacía, utiliza la clave api de respaldo.
+     *
+     * Garantiza una lista de claves api poblada exclusivamente con aquellas que dispongan del
+     * mínimo prestablecido de peticiones restantes, en cuyo defecto devolverá una lista vacía.
+     *
+     * El mínimo se peticiones requeridas se calcula en base a la cantidad diaria de peticiones
+     * permitidas y al límite de resultados por búsqueda.
      *
      * @param keyList Lista de claves api para Watchmode
      *
-     * @return Lista de claves api con 20 o más peticiones disponibles
-     *
-     * @throws Throwable Propaga todos los errores.
+     * @return Lista de claves api que disponen del mínimo de peticiones restantes requerido por día
      *
      * @see com.example.caniwatchitapplication.data.api.WatchmodeApi.getQuota
+     * @see QUOTA_NEEDED_PER_DAY
+     * @see WATCHMODE_BACKUP_API_KEY
      */
     suspend fun filterApiKeys(keyList: List<String>): List<String>
     {
+        val keyList = keyList.ifEmpty { listOf(WATCHMODE_BACKUP_API_KEY) }
+        var sumOfQuotas = 0
         val result = ArrayList<String>()
 
         for (key: String in keyList) {
@@ -55,12 +108,20 @@ class WatchmodeRepository(
                 response.body()?.let {
                     val quotaLeft = it.quota?.minus(it.quotaUsed ?: it.quota)
 
-                    if (quotaLeft != null && quotaLeft >= 20) {
+                    if (quotaLeft != null) {
+                        sumOfQuotas += quotaLeft
+                    }
+
+                    // If the quota cannot be retrieved, add the key
+                    if (quotaLeft == null || quotaLeft >= QUOTA_NEEDED_PER_DAY) {
                         result.add(key)
                     }
                 }
             }
         }
+
+        // Print sum of quotas left
+        Log.d(this.javaClass.simpleName, "Quotas left: $sumOfQuotas")
 
         return result
     }
@@ -168,7 +229,7 @@ class WatchmodeRepository(
         val result = ArrayList<TitleDetailsResponse>(titleIds.size)
 
         // Calls limited by the following constant.
-        for (title in titleIds.take(Constants.MAX_TITLE_DETAILS_REQUESTS))
+        for (title in titleIds.take(MAX_TITLE_DETAILS_REQUESTS))
         {
             val response = RetrofitProvider.watchmodeApi.getTitleDetails(title.id.toString(), apiKey)
             val titleDetails = response.body()

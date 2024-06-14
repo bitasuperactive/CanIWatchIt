@@ -35,17 +35,60 @@
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="4dp"
+        android:layout_height="0dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintTop_toTopOf="@id/tvInformation"
+        app:layout_constraintBottom_toBottomOf="@id/tvInformation"
+        app:layout_constraintEnd_toStartOf="@id/tvInformation"/>
+
+    <TextView
+        android:id="@+id/tvInformation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="12dp"
+        android:background="@color/md_theme_primary90"
+        android:text="@string/information_for_network_sources"
+        android:textColor="@color/md_theme_inverseSurface"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/rvAvailableStreamingSources"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAvailableStreamingSources"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources"
+        app:layout_constraintTop_toBottomOf="@id/tvInformation"
         tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:spanCount="4" />
+
+    <TextView
+        android:id="@+id/tvUnableToFetchSources"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:visibility="invisible"
+        android:text="@string/unable_to_fetch_sources"
+        android:layout_marginBottom="128dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rvAvailableStreamingSources"
+        app:layout_constraintBottom_toBottomOf="@id/rvAvailableStreamingSources"
+        tools:visibility="visible"/>
 
     <ProgressBar
         android:id="@+id/paginationProgressBar"

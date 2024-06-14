@@ -22,6 +22,8 @@ data class TitleDetailsResponse(
     val posterUrl: String?,
     @SerializedName("original_title")
     val title: String?,
+    @SerializedName("english_title")
+    val englishTitle: String?,
     val year: Int?,
     @SerializedName("user_rating")
     val userRating: Double?,

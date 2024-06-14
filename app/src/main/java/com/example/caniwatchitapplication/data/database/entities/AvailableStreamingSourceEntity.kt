@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.time.LocalDate
 
 /**
- * Clase de datos que representa la entidad de una plataforma de streaming disponible en la api.
+ * Entidad de una plataforma de streaming disponible en la api de Watchmode.
  *
  * @param lastUpdated Fecha de la última actualización de los datos
  *

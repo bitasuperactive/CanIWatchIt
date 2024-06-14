@@ -1,26 +1,25 @@
 package com.example.caniwatchitapplication.ui.view.fragments
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.databinding.FragmentSearchBinding
 import com.example.caniwatchitapplication.ui.adapter.SubscribedStreamingSourcesAdapter
 import com.example.caniwatchitapplication.ui.adapter.TitlesAdapter
 import com.example.caniwatchitapplication.ui.view.MainActivity
-import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
-import com.example.caniwatchitapplication.util.Constants.Companion.SEARCH_FOR_TITLES_DELAY
+import com.example.caniwatchitapplication.ui.viewmodel.SearchViewModel
+import com.example.caniwatchitapplication.ui.viewmodel.StreamingSourcesViewModel
 import com.example.caniwatchitapplication.util.Resource
+import com.example.caniwatchitapplication.util.Transformations
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -30,18 +29,22 @@ import kotlinx.coroutines.launch
 /**
  * Fragmento principal en el que el usuario puede buscar los títulos deseados a visualizar.
  *
+ * @see SearchViewModel
+ * @see StreamingSourcesViewModel
  * @see TitlesAdapter
  * @see SubscribedStreamingSourcesAdapter
  */
 class SearchFragment : Fragment(R.layout.fragment_search)
 {
     private var _binding: FragmentSearchBinding? = null
-
     private val binding get() = _binding!!
-    private lateinit var viewModel: AppViewModel
-    private lateinit var titlesAdapter: TitlesAdapter
+    private lateinit var mainActivity: MainActivity
+    private lateinit var viewModel: SearchViewModel
+    private lateinit var streamingSourcesViewModel: StreamingSourcesViewModel
     private lateinit var subscribedStreamingSourcesAdapter: SubscribedStreamingSourcesAdapter
-    
+    private lateinit var titlesAdapter: TitlesAdapter
+    private var loadingBrainJob: Job? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,21 +59,53 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = (activity as MainActivity).appViewModel
+        mainActivity = activity as MainActivity
+        viewModel = mainActivity.searchViewModel
+        streamingSourcesViewModel = mainActivity.streamingSourcesViewModel
 
+        setupLoadingBrainGif()
+
+        setupSavedStateObservers()
         setupAdapters()
-        setupSearchHintButton()
-        setupSearchEraseButton(view)
-        setupSearchListener()
-        setupTitleOnClickListener()
         setupSubscribedSourcesObserver()
+        setupSearchHintButton()
+        setupSearchListener()
         setupSearchedTitlesObserver()
+        setupTitleOnClickListener()
+    }
+
+    private fun setupLoadingBrainGif()
+    {
+        Glide.with(requireContext())
+            .asGif()
+            .load(R.raw.gif_loading_brain)
+            .into(binding.ivLoadingBrain)
+
+        binding.ivLoadingBrain.setOnClickListener {
+
+            binding.etTitleToSearch.requestFocus()
+            showKeyboard()
+        }
+    }
+
+    /**
+     * Restablece el estado previo de la interfaz.
+     */
+    private fun setupSavedStateObservers()
+    {
+        viewModel.hintVisibility.observe(viewLifecycleOwner) {
+            binding.tvHintToSearch.visibility = it
+        }
     }
 
     private fun setupAdapters()
     {
-        titlesAdapter = TitlesAdapter(this.requireView(), viewModel, viewLifecycleOwner)
         subscribedStreamingSourcesAdapter = SubscribedStreamingSourcesAdapter()
+        titlesAdapter = TitlesAdapter(
+            this.requireView(),
+            streamingSourcesViewModel,
+            viewLifecycleOwner
+        )
 
         binding.rvSearchedTitles.apply {
             this.layoutManager = LinearLayoutManager(activity)
@@ -86,95 +121,48 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     }
 
     /**
+     * Actualiza el adaptador de las plataformas suscritas por el usuario.
+     */
+    private fun setupSubscribedSourcesObserver()
+    {
+        streamingSourcesViewModel.subscribedStreamingSources.observe(viewLifecycleOwner) {
+
+            subscribedStreamingSourcesAdapter.submitList(it)
+        }
+    }
+
+    /**
      * Abre el teclado virtual al pulsar la pista de búsqueda.
      */
     private fun setupSearchHintButton()
     {
         binding.tvHintToSearch.setOnClickListener {
 
+            hideLodiangBrainGif()
             binding.etTitleToSearch.requestFocus()
             showKeyboard()
         }
     }
 
     /**
-     * Permite borrar el texto introducido en el campo de búsqueda pulsando la cruz del límite
-     * derecho.
-     */
-    // TODO - COPY-PASTED
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setupSearchEraseButton(view: View)
-    {
-        binding.etTitleToSearch.setOnTouchListener { _, event ->
-            view.performClick()
-
-            if (event.action == MotionEvent.ACTION_UP) {
-                val drawableEnd =
-                    binding.etTitleToSearch.compoundDrawablesRelative[2] // 2 representa el índice de la imagen a la derecha
-                if (drawableEnd != null
-                    // Se añaden 36 píxeles al tamaño del botón virtual para facilitar la pulsación
-                    && event.rawX >= binding.etTitleToSearch.right - (drawableEnd.bounds.width() + 36)) {
-                    binding.etTitleToSearch.text = null
-                    showKeyboard()
-                    return@setOnTouchListener true
-                }
-            }
-            false
-        }
-    }
-
-    /**
-     * Al cambiar la búsqueda del título, tras un delay predefinido, la ejecuta.
-     *
-     * @see SEARCH_FOR_TITLES_DELAY
+     * Actualiza el valor de búsqueda si este no es blanco.
      */
     private fun setupSearchListener()
     {
-        var searchJob: Job? = null
-        binding.etTitleToSearch.addTextChangedListener {
-            searchJob?.cancel()
-            searchJob = MainScope().launch {
-                delay(SEARCH_FOR_TITLES_DELAY)
-                it?.let {
-                    val searchValue = it.toString()
-                    if (searchValue.isNotBlank()) {
-                        hideSearchHint()
-                        viewModel.searchForTitles(it.toString())
-                    } else {
-                        titlesAdapter.submitList(emptyList())
-                        binding.tvNoTitlesFound.visibility = View.INVISIBLE
-                        showSearchHint()
-                    }
+        binding.etTitleToSearch.addTextChangedListener { editable ->
+            editable?.let {
+                val searchValue = it.toString()
+
+                // Must update even if it is blank
+                viewModel.setQuery(searchValue)
+
+                if (searchValue.isBlank()) {
+                    // Clear adapter
+                    titlesAdapter.submitList(emptyList())
+                    hideNoTitlesFound()
+                    showLodiangBrainGif()
                 }
             }
-        }
-    }
-
-    /**
-     * Al hacer click en un título navega al fragmento correspondiente.
-     *
-     * @see TitleFragment
-     */
-    private fun setupTitleOnClickListener()
-    {
-        titlesAdapter.setupOnItemClickListener {
-            val bundle = bundleOf("titleIds" to it)
-
-            findNavController().navigate(
-                R.id.action_searchFragment_to_titleFragment,
-                bundle
-            )
-        }
-    }
-
-    /**
-     * Actualiza el adaptador de las plataformas suscritas por el usuario.
-     */
-    private fun setupSubscribedSourcesObserver()
-    {
-        viewModel.subscribedStreamingSources.observe(viewLifecycleOwner) {
-
-            subscribedStreamingSourcesAdapter.submitList(it)
         }
     }
 
@@ -182,32 +170,53 @@ class SearchFragment : Fragment(R.layout.fragment_search)
      * Actualiza la interfaz acorde con el estado de la búsqueda realizada por el usuario.
      *
      * _Los errores simplemente se muestran en un SnackBar._
-     *
-     * @see Resource
      */
     private fun setupSearchedTitlesObserver()
     {
         viewModel.searchedTitles.observe(viewLifecycleOwner) { resource ->
+
             when (resource) {
                 is Resource.Loading -> {
+                    // Clear adapter
+                    titlesAdapter.submitList(emptyList())
+                    hideHint()
+                    hideLodiangBrainGif()
                     showProgressBar()
                 }
 
                 is Resource.Success -> {
                     resource.data?.let { titleDetailsList ->
+
                         hideProgressBar()
-                        titlesAdapter.submitList(titleDetailsList)
-                        binding.tvNoTitlesFound.visibility =
-                            if (titleDetailsList.isEmpty()) View.VISIBLE else View.INVISIBLE
+
+                        if (searchValueIsNotBlank() && titleDetailsList.isNotEmpty()) {
+                            hideLodiangBrainGif()
+                            // Only populate the adapter if there is a search
+                            titlesAdapter.submitList(titleDetailsList)
+                        } else {
+                            // Clear adapter
+                            titlesAdapter.submitList(emptyList())
+                        }
+
+                        if (titleDetailsList.isNotEmpty()) {
+                            viewModel.addQueryCount()
+                            hideNoTitlesFound()
+                        } else {
+                            showNoTitlesFound()
+                        }
                     }
                 }
 
                 is Resource.Error -> {
+                    binding.tvNoTitlesFound.visibility = View.VISIBLE
                     resource.message?.let {
                         hideProgressBar()
                         Snackbar.make(
                             binding.root,
-                            getString(R.string.unknown_error, it),
+                            getString(
+                                R.string.unknown_error,
+                                Transformations.detailWatchmodeErrorMsg(it)
+                            ),
                             Snackbar.LENGTH_LONG
                         ).apply {
                             setAnchorView(R.id.bottomNavigationView)
@@ -219,24 +228,56 @@ class SearchFragment : Fragment(R.layout.fragment_search)
     }
 
     /**
-     * Muestra el teclado virtual.
+     * Navega al fragmento del título clicado.
+     *
+     * @see TitleFragment
      */
-    // TODO - COPY-PASTED
+    private fun setupTitleOnClickListener()
+    {
+        titlesAdapter.setupOnItemClickListener {
+            val action = SearchFragmentDirections.actionSearchFragmentToTitleFragment(it)
+            findNavController().navigate(action)
+        }
+    }
+
+    /**
+     * Muestra implícitamente el teclado virtual.
+     */
     private fun showKeyboard()
     {
         val imm =
             requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(binding.etTitleToSearch, InputMethodManager.SHOW_IMPLICIT)
     }
-    
-    private fun hideSearchHint()
+
+    private fun hideHint()
     {
-        binding.tvHintToSearch.visibility = View.INVISIBLE
+        viewModel.setHintVisibility(View.INVISIBLE)
     }
-    
-    private fun showSearchHint()
+
+    private fun searchValueIsNotBlank() = binding.etTitleToSearch.text.isNotBlank()
+
+    private fun showLodiangBrainGif()
     {
-        binding.tvHintToSearch.visibility = View.VISIBLE
+        loadingBrainJob = MainScope().launch {
+            delay(12000)
+            hideHint()
+            binding.ivLoadingBrain.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideLodiangBrainGif()
+    {
+        loadingBrainJob?.cancel()
+        binding.ivLoadingBrain.visibility = View.INVISIBLE
+    }
+
+    private fun showNoTitlesFound() {
+        binding.tvNoTitlesFound.visibility = View.VISIBLE
+    }
+
+    private fun hideNoTitlesFound() {
+        binding.tvNoTitlesFound.visibility = View.INVISIBLE
     }
     
     private fun hideProgressBar()

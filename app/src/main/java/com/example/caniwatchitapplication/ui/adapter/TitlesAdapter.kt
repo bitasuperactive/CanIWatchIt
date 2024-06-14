@@ -16,27 +16,27 @@ import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.data.model.watchmode.TitleDetailsResponse
 import com.example.caniwatchitapplication.data.model.watchmode.TitleIds
 import com.example.caniwatchitapplication.databinding.ItemTitlePreviewBinding
-import com.example.caniwatchitapplication.ui.viewmodel.AppViewModel
+import com.example.caniwatchitapplication.ui.viewmodel.StreamingSourcesViewModel
 import com.example.caniwatchitapplication.util.Transformations.Companion.recreate
 import com.google.android.material.snackbar.Snackbar
 
 /**
- * Adaptador para los detalles de los títulos resultantes de una búsqueda. Además,
- * define el adaptador correspondiente a las plataformas en que el título se encuentra disponible.
+ * Adaptador para los detalles de los títulos resultantes de una búsqueda.
  *
  * Características:
  *
  *      - Items clicables.
  *
  * @param owner Vista propietaria del RecyclerView que implementa el adaptador
- * @param viewModel La VistaModelo de la aplicación
+ * @param viewModel ViewModel del fragmento de las plataformas de streaming disponibles.
  * @param lifecycleOwner Propietario del ciclo de vida del adaptador
  *
+ * @see StreamingSourcesViewModel
  * @see com.example.caniwatchitapplication.ui.adapter.TitleStreamingSourcesAdapter
  */
 class TitlesAdapter(
     private val owner: View,
-    private val viewModel: AppViewModel,
+    private val viewModel: StreamingSourcesViewModel,
     private val lifecycleOwner: LifecycleOwner
 ) : ListAdapter<TitleDetailsResponse, TitlesAdapter.TitlesViewHolder>(
     DiffUtilItemCallBack
@@ -81,7 +81,8 @@ class TitlesAdapter(
                 .error(R.drawable.ic_poster)
                 .into(binding.ivTitleImage)
             
-            binding.tvTitle.text = titleDetails.title
+            binding.tvTitle.text = if (!titleDetails.title.isNullOrEmpty())
+                titleDetails.title else titleDetails.englishTitle
             binding.tvYear.text = titleDetails.year.toString()
             binding.tvUserRating.text = context.getString(R.string.user_score, titleDetails.userRating)
             binding.tvPlotOverview.text = titleDetails.plotOverview
@@ -118,7 +119,7 @@ class TitlesAdapter(
                     if (titleSources.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
 
                 titleStreamingSourcesAdapter.setupOnItemClickListener { titleUrl ->
-                    openTitleUrl(titleUrl)
+                    openTitleSourceUrl(titleUrl)
                 }
 
                 titleStreamingSourcesAdapter.submitList(titleSources)
@@ -145,7 +146,7 @@ class TitlesAdapter(
      *
      * @param titleUrl Enlace a un título específico
      */
-    private fun openTitleUrl(titleUrl: String)
+    private fun openTitleSourceUrl(titleUrl: String)
     {
         val context = owner.context
         val uri = Uri.parse(titleUrl)
@@ -158,7 +159,7 @@ class TitlesAdapter(
         } catch (e: ActivityNotFoundException) {
             Snackbar.make(
                 owner,
-                "No ha sido posible abrir el enlace: $titleUrl",
+                context.getString(R.string.unable_to_open_url, titleUrl),
                 Snackbar.LENGTH_LONG
             ).apply {
                 anchorView = owner.rootView.findViewById(R.id.bottomNavigationView)

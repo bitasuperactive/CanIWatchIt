@@ -21,7 +21,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/bitasuperactive/CanIWatchIt">
-    <img src="doc/images/ic_launcher.png" alt="Logo" width="80" height="80">
+    <img src="github_assets/images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Can-I-Watch-It</h3>
@@ -52,6 +52,9 @@
       </ul>
     </li>
     <li><a href="#uso">Uso</a></li>
+      <ul>
+        <li><a href="#permisos-requeridos">Permisos requeridos</a></li>
+      </ul>
     <li><a href="#-objetivos">Objetivos</a></li>
     <li><a href="#-contribuir">Contribuir</a></li>
     <li><a href="#-licencia">Licencia</a></li>
@@ -66,16 +69,13 @@
 ## Sobre el proyecto
 Busca cualquier película o serie para ver si está disponible en tus plataformas contratadas.
 
-> [!IMPORTANT]
-> Resultados limitados a la región de España.
-
 <br />
 <br />
 
 <div align="center">
 	<a href="https://github.com/bitasuperactive/CanIWatchIt">
-		<img src="doc/images/app_showcase/plataformas.png" alt="Logo" width="270" height="555">
-		<img src="doc/images/app_showcase/buscar.png" alt="Logo" width="270" height="555">
+		<img src="github_assets/images/app_showcase/plataformas.png" alt="Logo" width="270" height="555">
+		<img src="github_assets/images/app_showcase/buscar.png" alt="Logo" width="270" height="555">
 	</a>
 </div>
 
@@ -85,14 +85,14 @@ Busca cualquier película o serie para ver si está disponible en tus plataforma
 <details>
 	<summary><h3>Requisitos de desarrollo</h3></summary>
 
-1. Primera evaluación:
-	 - ViewBinding
-	 - ConstraintLayout
-	 - RecyclerView
-	 - Navigation Component y el plugin Safe Args con al menos 3 pantallas.
- 2. Segunda evaluación:
-	 - ViewModel, LiveData y/o Flow. (2 puntos)
-	 - Arquitectura MVVM (2 puntos) con Patrón repositorio (2 puntos) con al menos una fuente de datos de las siguientes:
+  1. Primera evaluación:
+	  - ViewBinding
+	  - ConstraintLayout
+	  - RecyclerView
+	  - Navigation Component y el plugin Safe Args con al menos 3 pantallas.
+  2. Segunda evaluación:
+	  - ViewModel, LiveData y/o Flow. (2 puntos)
+	  - Arquitectura MVVM (2 puntos) con Patrón repositorio (2 puntos) con al menos una fuente de datos de las siguientes:
 		 - Base de datos local con Room
 		 - API Remota con Retrofit.
    	 - El proyecto debe ir acompañado de un documento con una breve explicación del mismo, las herramientas usadas y su cometido. Con una carilla de un Word se pueden explicar los aspectos fundamentales, pero no os pongo extensión máxima.
@@ -120,9 +120,16 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
 * ViewModel y LiveData.
 * Arquitectura MVVM con Patrón repositorio.
 * Base de datos local con Room
-* API Remota con Retrofit.
+* Retrofit.
 * Navigation menu.
 * Otros Plugins: Json to Kotlin data class.
+* [Watchmode](https://www.watchmode.com/)
+* [Pantry](https://getpantry.cloud/)
+
+<br />
+
+> [!NOTE]
+> Los Endpoints utilizados son de acceso gratuito y su uso está limitado.
 
 <p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
@@ -131,21 +138,19 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
 <!-- USAGE EXAMPLES -->
 ## Uso
 
-> [!NOTE]
-> * La ApiKey del Endpoint es grauita y está limitada a 1000 peticiones mensuales.
-> * Búsqueda de títulos limitada a 1 sólo resultado.
-> * Suscribirse a plataformas de streaming no tiene mayor utilidad que mostrarlas a color en los resultados de búsqueda.
+1️⃣ Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming que tengas contratadas; podrás cambiar tu elección desde esa misma pestaña de "Plataformas".
 
 <br />
 
-1️⃣ Al iniciar la aplicación por primera vez deberás seleccionar las plataformas de streaming deseadas a filtrar; podrás cambiar tu elección desde esa misma pestaña de "Plataformas".
+> [!NOTE]
+> * Suscribirse a plataformas de streaming no tiene mayor utilidad que mostrarlas a color en los resultados de búsqueda.
 
 <br />
 
 2️⃣ Desde la pestaña principal "Buscar", que a partir de ahora te aparecerá directamente, podrás buscar los títulos que quieras ver. Si el contenido resultante está disponible en cualquiera de tus plataformas, el logo de esta aparecerá a color, de lo contrario estará teñido de gris.
 
 > [!IMPORTANT]
-> Recuerda utilizar el nombre original o americano de la producción en vez del título en español.
+> Recuerda buscar el nombre original o americano de la producción, la api no contempla los títulos traducidos.
 
 <br />
 
@@ -154,8 +159,21 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
   * Pincha en la caratula para abrir la web de IMDb con toda la información del título, trailers disponibles y contenidos similares.
   * Pincha en cualquiera de las plataformas disponibles para abrir la aplicación correspondiente si la tienes instalada o, tu navegador por defecto, con la página del título.
 
-> [!WARNING]
-> JavaScript está habilitado en la vista web de IMDb.
+<p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
+
+### Permisos requeridos
+
+* INTERNET
+
+Los siguientes permisos permiten actualizar automáticamente la aplicación:
+
+* READ_EXTERNAL_STORAGE
+* WRITE_EXTERNAL_STORAGE
+* REQUEST_INSTALL_PACKAGES
+
+<br />
+
+Vease [este fork]("https://github.com/bitasuperactive/CanIWatchIt-limited") para una versión más restrictiva.
 
 <p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
@@ -172,9 +190,11 @@ Con los puntos anteriores será suficiente para aprobar, y dependiendo de la com
 	- [x] Gestionar la instalación automáticamente
 - [x] Dar funcionalidad a los iconos de las plataformas para que abran la aplicación correspondiente con la página del título
 
-### Posibles implementaciones:
-- [ ] Cambiar la api a la de JustWatch
+### Implementaciones adicionales:
+- [ ] <s>Cambiar la api a la de JustWatch</s>
 - [ ] <s>Implementar cámbio de región dinámico</s>
+
+<br />
 
 Vease [open issues](https://github.com/bitasuperactive/CanIWatchIt/issues) para una lista completa de las características propuestas y bugs conocidos.
 

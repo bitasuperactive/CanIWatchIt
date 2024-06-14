@@ -7,8 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.caniwatchitapplication.data.database.converters.Converters
 import com.example.caniwatchitapplication.data.database.dao.AvailableStreamingSourcesDao
+import com.example.caniwatchitapplication.data.database.dao.QueryDao
 import com.example.caniwatchitapplication.data.database.dao.SubscribedStreamingSourcesDao
 import com.example.caniwatchitapplication.data.database.entities.AvailableStreamingSourceEntity
+import com.example.caniwatchitapplication.data.database.entities.QueryEntity
 import com.example.caniwatchitapplication.data.database.entities.SubscribedStreamingSourceEntity
 import com.example.caniwatchitapplication.util.Constants
 
@@ -22,8 +24,8 @@ import com.example.caniwatchitapplication.util.Constants
  * @see AvailableStreamingSourceEntity
  */
 @Database(
-    entities = [SubscribedStreamingSourceEntity::class, AvailableStreamingSourceEntity::class],
-    version = 2,
+    entities = [SubscribedStreamingSourceEntity::class, AvailableStreamingSourceEntity::class, QueryEntity::class],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -31,6 +33,7 @@ abstract class AppDatabase : RoomDatabase()
 {
     abstract fun getAvailableStreamingSourcesDao(): AvailableStreamingSourcesDao
     abstract fun getSubscribedStreamingSourcesDao(): SubscribedStreamingSourcesDao
+    abstract fun getQueryDao(): QueryDao
     
     companion object
     {

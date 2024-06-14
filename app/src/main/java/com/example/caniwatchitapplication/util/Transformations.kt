@@ -5,9 +5,11 @@ import com.example.caniwatchitapplication.data.database.entities.StreamingSource
 import com.example.caniwatchitapplication.data.database.entities.SubscribedStreamingSourceEntity
 import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
 import com.example.caniwatchitapplication.data.model.watchmode.TitleStreamingSource
+import com.example.caniwatchitapplication.util.Constants.Companion.INVALID_API_KEY_MESSAGE
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_REGIONS
 import com.example.caniwatchitapplication.util.Constants.Companion.STREAMING_SOURCE_TYPES
 import java.time.LocalDate
+import java.util.Locale
 
 /**
  * Métodos de transformación y filtrado de objetos.
@@ -34,8 +36,17 @@ class Transformations
             val titleSourcesWithLogos = this.addLogos(availableStreamingSources)
 
             return titleSourcesWithLogos.filter { titleSource ->
-                titleSource.type == STREAMING_SOURCE_TYPES
-                        && titleSource.region == STREAMING_SOURCE_REGIONS
+                if (titleSource.type == null || titleSource.region == null) {
+                    return@filter false
+                }
+
+                val allSourceTypes = STREAMING_SOURCE_TYPES.isEmpty()
+
+                (allSourceTypes || STREAMING_SOURCE_TYPES.contains(
+                    titleSource.type, true
+                )) && STREAMING_SOURCE_REGIONS.contains(
+                    titleSource.region, true
+                )
             }
         }
 
@@ -100,6 +111,26 @@ class Transformations
                     it.logoUrl ?: "",
                     LocalDate.now()
                 )
+            }
+        }
+
+        /**
+         * Proporciona una descripción más detallada para los errores recibidos del Endpoint
+         * Watchmode referentes a la validez de la clave api utilizada.
+         *
+         * @param message Mensaje de error de Watchmode
+         *
+         * @return Mensaje de error detallado o, si no se contempla, el mensaje original.
+         *
+         * @see INVALID_API_KEY_MESSAGE
+         */
+        fun detailWatchmodeErrorMsg(message: String): String
+        {
+            return when(message.lowercase(Locale.getDefault())) {
+                "unauthorized" -> INVALID_API_KEY_MESSAGE
+                "over quota" -> INVALID_API_KEY_MESSAGE
+                "too many requests" -> INVALID_API_KEY_MESSAGE
+                else -> message
             }
         }
     }

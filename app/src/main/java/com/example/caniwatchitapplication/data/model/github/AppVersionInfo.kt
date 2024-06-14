@@ -38,7 +38,7 @@ data class AppVersionInfo(
             ")"
 
     /**
-     * Comprueba si ninguno de sus atributos son nulos.
+     * Comprueba si ninguno de sus atributos es nulo.
      *
      * @return Verdadero si existe algún atributo nulo, falso en su defecto.
      */

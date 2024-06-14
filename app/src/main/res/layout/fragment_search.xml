@@ -8,18 +8,20 @@
     tools:context=".ui.view.fragments.SearchFragment">
 
 
-    <com.google.android.material.textfield.TextInputEditText
+    <EditText
         android:id="@+id/etTitleToSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/ic_erase_text"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:selectAllOnFocus="true"
+        android:focusable="true"
         android:hint="@string/search_hint"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:autofillHints="" />
 
     <LinearLayout
         android:id="@+id/lLayoutSubscribedStreamingSources"
@@ -28,6 +30,7 @@
         android:layout_marginTop="8dp"
         android:background="@color/md_theme_secondary80"
         android:orientation="vertical"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etTitleToSearch">
@@ -43,24 +46,42 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/tvHintToSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:gravity="center"
         android:text="@string/explicit_search_hint"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginBottom="128dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources"/>
 
-    <com.google.android.material.textview.MaterialTextView
+    <ImageView
+        android:id="@+id/ivLoadingBrain"
+        android:layout_width="138dp"
+        android:layout_height="104dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:visibility="invisible"
+        android:layout_marginBottom="128dp"
+        android:contentDescription="@string/loading_brain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources"
+        tools:visibility="visible"/>
+
+    <TextView
         android:id="@+id/tvNoTitlesFound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,7 +91,8 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources" />
+        app:layout_constraintTop_toBottomOf="@id/lLayoutSubscribedStreamingSources"
+        tools:visibility="visible"/>
 
     <ProgressBar
         android:id="@+id/paginationProgressBar"

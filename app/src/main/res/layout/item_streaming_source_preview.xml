@@ -11,13 +11,29 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:adjustViewBounds="true"
-        android:src="@mipmap/ic_launcher_round"
+        android:src="@mipmap/ic_android"
         android:contentDescription="@string/streaming_source_image_content_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearance="@style/RoundedShapeAppearanceOverlay" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="visible"
+        android:textColor="@color/md_theme_inverseSurface"
+        android:textSize="12sp"
+        android:background="@android:color/background_light"
+        android:layout_margin="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivLogo"
+        app:layout_constraintBottom_toBottomOf="@id/ivLogo"
+        tools:text="@string/platform"/>
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/cb_streaming_source"

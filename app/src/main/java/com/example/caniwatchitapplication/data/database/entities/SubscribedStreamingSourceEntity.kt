@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Clase de datos que representa la entidad de una plataforma de streaming suscrita por el usuario.
+ * Entidad de una plataforma de streaming suscrita por el usuario.
  *
  * @see StreamingSourceEntity
  */

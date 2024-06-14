@@ -25,18 +25,37 @@ class Constants
         const val APP_DATABASE_NAME = "caniwatchit_db.db"
 
         /**
-         * Clave api de respaldo para Watchmode en caso de que la base de datos remota no esté
+         * Clave api gratuita de respaldo para Watchmode en caso de que la base de datos remota no esté
          * disponible o no devuelva ninguna clave para Watchmode.
          */
         const val WATCHMODE_BACKUP_API_KEY = "DTTAVpb3QzVjtZdADZJ1YiVo3MzIzHWWJfWFukvo"
 
         /**
+         * Cantidad límite de búsquedas diarias.
+         */
+        const val QUERY_LIMIT_PER_DAY = 10  // Use -1 for unlimited queries
+
+        /**
          * Límite de la cantidad de títulos detallados a recuperar de la api.
          *
-         * _Al trabajar con 1000 peticiones mensuales que proporciona la versión grauita de la api,
-         * es obligado limitar la funcionalidad de la aplicación._
+         * _Al trabajar con claves api gratuitas, es obligado limitar la funcionalidad de la
+         * aplicación._
          */
-        const val MAX_TITLE_DETAILS_REQUESTS = 1
+        const val MAX_TITLE_DETAILS_REQUESTS = 5
+
+        /**
+         * Calcula el número de peticiones de Watchmode requeridas para satisfacer el servicio
+         * diario para cada usuario.
+         *
+         * Por ejemplo, si QUERY_LIMIT_PER_DAY = 10 y MAX_TITLE_DETAILS_REQUESTS = 5, la operación sería la
+         * siguiente: 10 + (10 * 5) = 60 peticiones por día para cada usuario.
+         *
+         * _Se añaden 10 peticiones adicionales para contemplar búsquedas nulas._
+         *
+         * @see QUERY_LIMIT_PER_DAY
+         * @see MAX_TITLE_DETAILS_REQUESTS
+         */
+        const val QUOTA_NEEDED_PER_DAY = QUERY_LIMIT_PER_DAY + (QUERY_LIMIT_PER_DAY * MAX_TITLE_DETAILS_REQUESTS) + 10
 
         /**
          * Idioma de los detalles del título, como la sinopsis, a buscar.
@@ -62,11 +81,12 @@ class Constants
         const val STREAMING_SOURCE_REGIONS = "ES"
 
         /**
-         * Tipos de plataforma de streaming a filtrar al buscar títulos.
+         * Tipos de plataforma de streaming a filtrar al buscar títulos. Una cadena vacía equivale
+         * a todos los tipos disponibles.
          *
          * Tipos disponibles: [API Docs](https://api.watchmode.com/docs/#list-titles)
          */
-        const val STREAMING_SOURCE_TYPES = "sub"
+        const val STREAMING_SOURCE_TYPES = "sub,free,tve"
 
         /**
          * Tamaño mínimo que pueden tomar los logos de las plataformas de streaming.
@@ -92,6 +112,21 @@ class Constants
          * Define el número de días tras las cuales se deben actualizar las plataformas de
          * streaming disponibles.
          */
-        const val DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES = 1
+        const val DAYS_TO_UPDATE_AVAILABLE_STREAMING_SOURCES = 7
+
+        /**
+         * Mensaje por defecto para los errores de red.
+         */
+        const val NETWORK_FAILURE_MESSAGE = "Network failure"
+
+        /**
+         * Mensaje por defecto para los errores de conversión de Json a Kotlin.
+         */
+        const val CONVERSION_FAILURE_MESSAGE = "Json to Kotlin conversion failure"
+
+        /**
+         * Mensaje por defecto para los errores de Watchmode referentes a la validez de la clave api.
+         */
+        const val INVALID_API_KEY_MESSAGE = "Las claves api han sido agotadas para el mes en curso."
     }
 }

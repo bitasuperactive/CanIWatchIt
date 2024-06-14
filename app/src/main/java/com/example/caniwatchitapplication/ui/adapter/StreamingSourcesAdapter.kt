@@ -1,9 +1,14 @@
 package com.example.caniwatchitapplication.ui.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.example.caniwatchitapplication.R
 import com.example.caniwatchitapplication.data.model.watchmode.StreamingSource
 import com.example.caniwatchitapplication.databinding.ItemStreamingSourcePreviewBinding
@@ -39,10 +44,34 @@ class StreamingSourcesAdapter(
 
         // Set logos image and click functionality
         holder.itemView.apply {
+            binding.tvName.text = streamingSource.name
+
             Glide.with(context)
                 .load(streamingSource.logoUrl)
-                .placeholder(R.mipmap.ic_launcher_round)
-                .error(R.mipmap.ic_launcher_round)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Hide sources name
+                        binding.tvName.visibility = View.GONE
+                        return false
+                    }
+                })
+                .placeholder(R.mipmap.ic_android)
+                .error(R.mipmap.ic_android)
                 .into(binding.ivLogo)
 
             setOnClickListener {
