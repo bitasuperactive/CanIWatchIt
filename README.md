@@ -173,7 +173,7 @@ Los siguientes permisos permiten actualizar automáticamente la aplicación:
 
 <br />
 
-Vease [este fork]("https://github.com/bitasuperactive/CanIWatchIt-limited") para una versión más restrictiva.
+Vease [releases](https://github.com/bitasuperactive/CanIWatchIt/releases/latest) para una versión más restrictiva.
 
 <p align="right">(<a href="#can-i-watch-it">volver al inicio</a>)</p>
 
